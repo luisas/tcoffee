@@ -23,10 +23,10 @@
 /** \mainpage T-Coffee Index Page
  *
  * \section premise Premise
- * 
- * This documentation is far from comprehensive... in fact only a few functions have been documented yet. 
+ *
+ * This documentation is far from comprehensive... in fact only a few functions have been documented yet.
  * But maybe it will be extended during the years by people working with the T-Coffe code ;)
- * 
+ *
  * \section start A Place to Start With
  *
  * In order to get an idea of the main procedure of T-Coffee when calculating a multiple alignment,
@@ -131,11 +131,11 @@ int main (int argc, char *argv[])
 {
 // printf("RUNNING DEBUG\n");
   int r, a;
-  
+
 
   if (argv[0][0]=='\0'){argv[0]="t_coffee";}
-      
-  
+
+
   if (argc>=2 && strcmp (argv[1], "-batch")==0)
     {
       char **list;
@@ -160,17 +160,17 @@ int main (int argc, char *argv[])
  * Brings everything together, but does not contain computations.
  *
  * \callgraph
- * 
+ *
  * \section remark Remark
- * 
+ *
  * The follwowing text is just a summation of short lines of documentation appearing throughout
  * the code of this function. Often they make more sense in their specific context,
- * that means while reading the source code. 
+ * that means while reading the source code.
  *
  *
  * \section prep Preparation
  *
- * 
+ *
  */
 
 int batch_main ( int argc, char **argv)
@@ -413,7 +413,7 @@ int batch_main ( int argc, char **argv)
 	/*Cache*/
 	char * cache;
 	int print_cache;
-	
+
 	/*align_pdb*/
 	char *align_pdb_param_file;
 	char *align_pdb_hasch_mode;
@@ -472,7 +472,7 @@ int batch_main ( int argc, char **argv)
 	int   n_core;
 	int max_n_proc; //legacy for Nature protocol
 	int n_thread;
-	
+
 	char *lib_list;
 	char *prune_lib_mode;
 
@@ -511,7 +511,7 @@ int batch_main ( int argc, char **argv)
 	    sb();
 	    exit (0);
 	  }
-	
+
 	/**
 	 * Before anything else, check if we want to use the \b other_pg option of T-Coffee.
 	 *        If so, redirect to ::run_other_pg.
@@ -519,7 +519,7 @@ int batch_main ( int argc, char **argv)
 	 */
 
 	argv=standard_initialisation (argv, &argc);
-	
+
 	set_string_variable ("t_coffee", argv[0]);
 
 	if (argc>=3 && strm (argv[1], "-other_pg"))
@@ -529,10 +529,10 @@ int batch_main ( int argc, char **argv)
 	  }
 	else if ( name_is_in_list ("kmcoffee", argv, argc, 100)!=-1)
 	  {
-	    argv=km_coffee(argc, argv); 
+	    argv=km_coffee(argc, argv);
 	  }
-	
-	
+
+
 	 /**
 	  * Read all the parameters of T_Coffee using ::get_cl_param
 	  *
@@ -555,7 +555,7 @@ int batch_main ( int argc, char **argv)
 			    /*Min_value*/ "any"            ,\
 			    /*Max Value*/ "any"             \
 					  );
-		 
+
 /*PARAMETER PROTOTYPE:    READ PARAMETER FILE     */
 	       declare_name (parameters);
 	       get_cl_param(\
@@ -712,7 +712,7 @@ int batch_main ( int argc, char **argv)
 			    /*Max Value*/ "any"				\
 					  );
 	        /*PARAMETER PROTOTYPE:    INFILE    */
-	       
+
 	       declare_name (type);
 	       get_cl_param(					\
 			    /*argc*/      argc           ,	\
@@ -755,7 +755,7 @@ int batch_main ( int argc, char **argv)
 		   cputenv ("LOCAL_PLUGINS_4_TCOFFEE=%s", plugins);// single use environement variable
 		   get_plugins_4_tcoffee();
 		 }
-	      
+
 	       declare_name (plugins_order);
 	       get_cl_param(					\
 			    /*argc*/      argc           ,	\
@@ -775,9 +775,9 @@ int batch_main ( int argc, char **argv)
 					  );
 	       if (strm (plugins_order,"first"))cputenv4pathFirst(get_plugins_4_tcoffee());
 	       else cputenv4pathLast(get_plugins_4_tcoffee());
-	       
+
 	       if (reg || dpa)reg=dpa=1;
-	       
+
 
 	       /**
 		* Load T-Coffee default parameters.
@@ -788,7 +788,7 @@ int batch_main ( int argc, char **argv)
 		* \endcode
 		*
 		*/
-	       
+
 
 if (dpa)
   {
@@ -847,35 +847,35 @@ if (t_coffee_defaults_flag)
      register_file4dump(parameters, "r");
      argv=push_string (file2string (parameters), argv, &argc, 1);
    }
- 
+
  if (n_special_mode && !type_only)
    {
      char *special_mode;
      char *lseq_type;
-     
+
 
      declare_name(lseq_type);
-     
+
      if (type && !strm (type, ""))
        sprintf (lseq_type,"%s",type);
      else
        sprintf (lseq_type,"%s",get_seq_type_from_cl (argc, argv));
-     
-     
-     
+
+
+
      for ( a=0; a< n_special_mode; a++)
        {
 	 char *new_arg=NULL;//to be pushed after t_coffee
 	 char *new_arg2=NULL;//to be pushed last
-	 
-	 
+
+
 	 special_mode=special_mode_list[a];
 
 	 store_mode (special_mode);
-	 
-	 
+
+
 	 if (special_mode && !special_mode[0]);
-	 
+
 	 else if ( strm (special_mode, "genepredx"))new_arg=get_genepredx_defaults(NULL,lseq_type);
 	 else if ( strm (special_mode, "genepredpx"))new_arg=get_genepredpx_defaults(NULL,lseq_type);
 
@@ -893,16 +893,16 @@ if (t_coffee_defaults_flag)
 	 else if ( strm (special_mode, "psicoffee"))new_arg=get_psicoffee_defaults(NULL,lseq_type);
 	 else if ( strm (special_mode, "procoffee"))new_arg=get_procoffee_defaults(NULL,lseq_type);
 	 else if ( strm (special_mode, "blastr"))new_arg=get_blastr_defaults(NULL,lseq_type);
-	 
+
 	 else if ( strm (special_mode, "accurate") || strm (special_mode, "accurate_slow") || strm (special_mode, "psicoffee_expresso"))new_arg=get_accurate_defaults(NULL, lseq_type);
 	 else if ( strm (special_mode, "accurate4DNA"))new_arg=get_accurate4DNA_defaults(NULL,lseq_type);
 	 else if ( strm (special_mode, "accurate4RNA"))new_arg=get_accurate4RNA_defaults(NULL,lseq_type);
 	 else if ( strm (special_mode, "best4RNA"))new_arg=get_best4RNA_defaults(NULL,lseq_type);
 	 else if ( strm (special_mode, "accurate4PROTEIN"))new_arg=get_accurate4PROTEIN_defaults(NULL,lseq_type);
-	 
+
 	 else if ( strm (special_mode, "low_memory") || strm (special_mode, "memory"))new_arg=get_low_memory_defaults(NULL,lseq_type);
-	 
-	 
+
+
 	 else if ( strm (special_mode, "dna"))new_arg=get_dna_defaults(NULL,lseq_type);
 	 else if ( strm (special_mode, "cdna"))new_arg=get_dna_defaults(NULL,lseq_type);
 	 else if ( strm (special_mode, "protein"))new_arg=get_low_memory_defaults(NULL,lseq_type);
@@ -921,7 +921,7 @@ if (t_coffee_defaults_flag)
 	 else if ( strm (special_mode, "t_coffee"))new_arg=get_t_coffee_defaults(NULL,lseq_type);
 	 else if ( strm (special_mode, "saracoffee"))new_arg2=get_saracoffee_defaults(NULL,lseq_type);
 	 else if ( strm (special_mode, "rsapcoffee"))new_arg2=get_rsapcoffee_defaults(NULL,lseq_type);
-	 
+
 
 	 else if ( strm (special_mode, "unspecified"));
 	 else
@@ -929,7 +929,7 @@ if (t_coffee_defaults_flag)
 	     fprintf ( stderr, "\nERROR: special_mode %s is unknown [FATAL:%s]\n",special_mode, PROGRAM);
 	     myexit (EXIT_FAILURE);
 	   }
-	 
+
 	 if (new_arg)argv=push_string (new_arg, argv, &argc, 1);
 	 else if (new_arg2)argv=push_string (new_arg2, argv, &argc,argc);
        }
@@ -937,7 +937,7 @@ if (t_coffee_defaults_flag)
 
 if ( getenv ("TCOFFEE_EXTRA_PARAM"))argv=push_string (getenv ("TCOFFEE_EXTRA_PARAM"), argv, &argc, argc);
 
-	       
+
 dump_io_start (NULL);
 argv=break_list ( argv, &argc, "=;, \n");
 argv=merge_list ( argv, &argc);
@@ -960,7 +960,7 @@ argv=merge_list ( argv, &argc);
 			    /*Max Value*/ "1"             \
 		   );
 
-	       
+
 
 /*PARAMETER PROTOTYPE:    DO EVALUATE      */
 	       get_cl_param(\
@@ -1056,9 +1056,9 @@ if ( !do_evaluate)
 			    /*Max Value*/ "any"          \
 		   );
 
-     
+
      if (type_only==1)sprintf ( se_name, "/dev/null");
-     
+
      get_cl_param(						\
 			    /*argc*/      argc          ,\
 			    /*argv*/      argv          ,\
@@ -1101,7 +1101,7 @@ if ( !do_evaluate)
 		  /*Min_value*/ "any"         ,			\
 		  /*Max Value*/ "any"				\
 				);
-     
+
 
 
      /*PARAMETER PROTOTYPE:    DO FORMAT      */
@@ -1163,7 +1163,7 @@ if ( !do_evaluate)
 
      le=get_stdout1(se_name);
      fprintf ( le, "\nPROGRAM: %s %s (%s)\n",PROGRAM,VERSION,BUILD_INFO);
-     
+
 
 /*PARAMETER PROTOTYPE: RUN NAME*/
                declare_name (full_log);
@@ -1404,7 +1404,7 @@ if ( !do_evaluate)
 			    /*Max Value*/ "any"          \
 					  );
 	       if (n_template_file)cputenv ("template_file_4_TCOFFEE=%s",template_file_list[0]);
-	       
+
 /*PARAMETER PROTOTYPE:    VERSION      */
 	       setenv_list=declare_char (100, STRING);
 	       n_setenv=get_cl_param(\
@@ -1442,8 +1442,8 @@ if ( !do_evaluate)
 			    /*Min_value*/ "0"            ,		\
 			    /*Max Value*/ "1"				\
 					  );
-	       
-	       
+
+
 /*PARAMETER PROTOTYPE:        IN */
 	       template_mode_list=declare_char (100, STRING);
 	       n_template_mode=get_cl_param(			\
@@ -1563,7 +1563,7 @@ if ( !do_evaluate)
 				/*Min_value*/ "any"         ,		\
 				/*Max Value*/ "any"			\
 					      );
-	
+
 
 	aln_file_list=declare_char (1000, STRING);
 	n_aln_file_list=get_cl_param(				\
@@ -1650,7 +1650,7 @@ if ( !do_evaluate)
 			    /*Min_value*/ "any"            ,\
 			    /*Max Value*/ "any"             \
 			    );
-	
+
 	if (n_profile_list)
 	  {
 	    profile_list[n_profile_list]=NULL;
@@ -1836,7 +1836,7 @@ if ( !do_evaluate)
 			    /*Min_value*/ "any"         ,\
 			    /*Max Value*/ "any"          \
 		   );
-	
+
 	       /*PARAMETER PROTOTYPE:    SEQ TO ALIGN     */
 	       declare_name (seq_source);
 	       get_cl_param(\
@@ -2159,7 +2159,7 @@ if ( !do_evaluate)
 			    /*Max Value*/ "any"           \
 		   );
 
-	       
+
 	       /*PARAMETER PROTOTYPE:    INFILE    */
 	       declare_name (infile);
 	       get_cl_param(\
@@ -2178,7 +2178,7 @@ if ( !do_evaluate)
 			    /*Min_value*/ "any"          ,\
 			    /*Max Value*/ "any"           \
 		   );
-	       
+
 	       /*PARAMETER PROTOTYPE:    INFILE    */
 	       declare_name (matrix);
 	       get_cl_param(\
@@ -2543,7 +2543,7 @@ if ( !do_evaluate)
 			    /*Min_value*/ "any"         ,\
 			    /*Max Value*/ "any"          \
 		   );
-	       
+
 /*PARAMETER PROTOTYPE:    WEIGHT      */
 
 	       get_cl_param(\
@@ -2759,9 +2759,9 @@ get_cl_param(\
 			    /*Max Value*/ "any"             \
 		   );
 	       if (!strm (color_mode, "default"))cputenv ("COLOR_4_TCOFFEE=%s", color_mode);
-	     
+
 /*PARAMETER PROTOTYPE:    WEIGHT      */
-	       
+
 	       get_cl_param(\
 			    /*argc*/      argc             ,\
 			    /*argv*/      argv             ,\
@@ -2949,7 +2949,7 @@ get_cl_param(							\
 			    /*Min_value*/ "any"         ,\
 			    /*Max Value*/ "any"          \
 		   );
- 
+
 cputenv ("psiJ_4_TCOFFEE=%d", psiJ);
 cputenv ("num_iterations_4_TCOFFEE=%d", psiJ);
 
@@ -3202,9 +3202,9 @@ declare_name (prot_db);
  if ( strm (prot_db, "env"))prot_db=get_env_variable ("protein_db_4_TCOFFEE", IS_FATAL);
  set_string_variable ("prot_db", prot_db);
  cputenv ("protein_db_4_TCOFFEE=%s",prot_db);
- 
- 
- 
+
+
+
  declare_name (method_log);
  get_cl_param(							\
 			    /*argc*/      argc          ,\
@@ -3360,7 +3360,7 @@ declare_name (et_mode);
 			    /*Min_value*/ "any"         ,	\
 			    /*Max Value*/ "any"			\
 					  );
- 
+
 declare_name (master_mode);
 get_cl_param(\
 			    /*argc*/      argc          ,\
@@ -3748,8 +3748,8 @@ get_cl_param(\
 			    /*Min_value*/ "0"          ,\
 			    /*Max Value*/ "10000"           \
 		   );
-	      
-	       
+
+
 
 /*PARAMETER PROTOTYPE:    max_n_proc:: legacy for the nature protocol    */
 	       max_n_proc=0;
@@ -3773,14 +3773,14 @@ get_cl_param(\
 	       //-n_core and -max_n_core are deprecated. everything should arrive via -thread
 	       //if any of the three is set 0, ALL cores are used
 	       //if any of the three are set top >1 , the highest value is used
-	       
+
 	       if (!n_core || !max_n_proc || !n_thread){n_core=get_nproc();}
 	       else n_core=MAX3(n_core, max_n_proc,n_thread);
 	       set_int_variable ("n_core",n_core);
 	       set_nproc (n_core);
 	       cputenv ("thread_4_TCOFFEE=%d", get_nproc());
-	       
-	       
+
+
 
 /*PARAMETER PROTOTYPE:    lib_list    */
 	       declare_name (lib_list);
@@ -3891,9 +3891,9 @@ get_cl_param(\
 		   );
 	       set_int_variable ("run_local_script", run_local_script);
 
-	       
 
-	       
+
+
 	       declare_name (proxy);
 	       get_cl_param(\
 			    /*argc*/      argc           ,\
@@ -4041,7 +4041,7 @@ get_cl_param(\
 			    /*Max Value*/ "any"           \
 		   );
 	       set_int_variable ("overaln_target", overaln_threshold);
-	       
+
 	       overaln_P1=0;
 	       get_cl_param(					\
 			    /*argc*/      argc           ,\
@@ -4059,9 +4059,9 @@ get_cl_param(\
 			    /*Min_value*/ "any"          ,\
 			    /*Max Value*/ "any"           \
 		   );
-		   
+
 	       if (overaln_P1)set_int_variable ("overaln_P1", overaln_P1);
-	       
+
 	       overaln_P2=0;
 	       get_cl_param(					\
 			    /*argc*/      argc           ,\
@@ -4099,7 +4099,7 @@ get_cl_param(\
 			    /*Max Value*/ "any"           \
 		   );
 	       if (overaln_P3)set_int_variable ("overaln_P3", overaln_P3);
-	       
+
 	       overaln_P4=0;
 	       get_cl_param(					\
 			    /*argc*/      argc           ,\
@@ -4140,7 +4140,7 @@ get_cl_param(\
 	       if ( exon_boundaries[0])set_string_variable ("exon_boundaries", exon_boundaries);
 
 
-	       
+
 
 	       display=100;
 	       get_cl_param(\
@@ -4160,15 +4160,15 @@ get_cl_param(\
 			    /*Max Value*/ "any"           \
 			   );
 	       if (display)set_int_variable ("display",display);
-	       
+
 /*******************************************************************************************************/
 /*                                                                                                     */
 /*                           TCoffee_dpa Parameter:END                                                 */
 /*                                                                                                     */
 /*******************************************************************************************************/
-	      
 
-	       
+
+
 	       if (argc==1 )
 		 {
 		   display_method_names ("display", stdout);
@@ -4182,50 +4182,50 @@ get_cl_param(\
 		   fprintf (stdout, "%s\n", get_cache_dir());
 		   myexit (EXIT_SUCCESS);
 		 }
-	       
+
 
 /*******************************************************************************************************/
 /*                                                                                                     */
 /*                           TCoffee clean mode                                                        */
 /*                                                                                                     */
 /*******************************************************************************************************/
-	       
+
 	       if (!strstr (clean_list, "no"))
 		 {
 		   char command[10000];
 		   if (strstr (clean_list, "all") || strstr (clean_list, "cache"))
 		     {
-		       sprintf (command, "rm -rf %s", getenv ("CACHE_4_TCOFFEE")); 
+		       sprintf (command, "rm -rf %s", getenv ("CACHE_4_TCOFFEE"));
 		       if ( !strstr (command, "cache"))
 			 {
-			   fprintf ( stderr, "For security reasons the cache dir must contain the string cache.\nYour cached data seems to be stored in [%s]\nYou must delete it manually.",getenv ("CACHE_4_TCOFFEE")); 
+			   fprintf ( stderr, "For security reasons the cache dir must contain the string cache.\nYour cached data seems to be stored in [%s]\nYou must delete it manually.",getenv ("CACHE_4_TCOFFEE"));
 			 }
 		       else
 			 {
-			   
+
 			   printf_system_direct ("%s",command);
 			 }
 		     }
 		   if (strstr (clean_list, "all") || strstr (clean_list, "lock"))
 		     {
-		       
-		       sprintf (command, "rm -rf %s", getenv ("LOCKDIR_4_TCOFFEE")); 
+
+		       sprintf (command, "rm -rf %s", getenv ("LOCKDIR_4_TCOFFEE"));
 		       if ( !strstr (command, "lck") &&!strstr (command, "lock")  )
 			 {
-			   fprintf ( stderr, "For security reasons the lock dir must contain the string lck.\nYour lock data seems to be stored in [%s]\nYou must delete it manually.",getenv ("LOCKDIR_4_TCOFFEE")); 
+			   fprintf ( stderr, "For security reasons the lock dir must contain the string lck.\nYour lock data seems to be stored in [%s]\nYou must delete it manually.",getenv ("LOCKDIR_4_TCOFFEE"));
 			 }
 		       else
 			 {
 			   printf_system_direct ("%S",command);
 			 }
-		       
+
 		     }
 		   if (strstr (clean_list, "all") || strstr (clean_list, "tmp"))
 		     {
 		       sprintf (command, "rm -rf %s", getenv ("ROOT_TMP_4_TCOFFEE"));
 		       if ( !strstr (command, "tmp"))
 			 {
-			   fprintf ( stderr, "For security reasons the tmp dir must contain the string tmp.\nYour tmp data seems to be stored in [%s]\nYou must delete it manually.",getenv ("ROOT_TMP_4_TCOFFEE")); 
+			   fprintf ( stderr, "For security reasons the tmp dir must contain the string tmp.\nYour tmp data seems to be stored in [%s]\nYou must delete it manually.",getenv ("ROOT_TMP_4_TCOFFEE"));
 			 }
 		       else
 			 {
@@ -4234,7 +4234,7 @@ get_cl_param(\
 		     }
 		   exit (EXIT_SUCCESS);
 		 }
-	       
+
 /*******************************************************************************************************/
 /*                                                                                                     */
 /*                           FILL list_file (contains seq, aln and meth)                               */
@@ -4246,13 +4246,13 @@ get_cl_param(\
 /*Re-introduce the sequences introduced with -infile*/
 /*Standard*/
 
-	       
+
 	       if ( infile[0] && !do_evaluate)
 		   {
 		   sprintf ( list_file[n_list++], "%s",infile);
-		   
+
 		   }
-	      
+
 /*DO EVALUATE: The aln to evaluate must be provided via -infile*/
 	       else  if (do_evaluate)
 	           {
@@ -4272,7 +4272,7 @@ get_cl_param(\
 		       }
 		     else sprintf ( list_file[n_list++], "S%s",infile);
 		   }
-	       
+
 	       /**
 	        *  Array \c list_file[] contains the names of all input files like sequences, profiles and templates,
 	        *  but also methods.
@@ -4283,7 +4283,7 @@ get_cl_param(\
 	        *      - \b A for alignments
 	        *      - \b L for libraries (via the -lib flag)
 	        *      - \b P for PDB structures
-	        *   
+	        *
 	        *   See ::read_constraint_list for more information on how these files will be processed.
 	        */
 
@@ -4293,7 +4293,7 @@ get_cl_param(\
 
 		   if ( do_evaluate || do_convert)sprintf ( infile, "%s",seq_list[0]);
 		 }
-	       
+
 	       /*EXPAND -in*/
 	       /*Introduce the sequences from the -profile flag*/
 	       if ( profile1 && profile1[0])
@@ -4328,13 +4328,13 @@ get_cl_param(\
 		       sprintf ( list_file[n_list++], "R%s",profile_list[a]);
 		     }
 		 }
-	      
-	       
+
+
 	       /*Introduce the sequences from the -seq flag*/
 	       for (a=0; a<n_seq_list; a++)
 		 {
 		   //
-		   
+
 		   if (check_file_exists(seq_list[a]))
 		     sprintf (list_file[n_list++], "S%s",seq_list[a]);
 		   else if ( check_file_exists (seq_list[a]+1) && seq_list[a][0]=='S')
@@ -4342,7 +4342,7 @@ get_cl_param(\
 		   else printf_exit ( EXIT_FAILURE,stderr, "\nERROR: %s does not exist [FATAL]",seq_list[a]);
 
 		 }
-	      
+
 	       /*introduce the alignments from the -aln flag*/
 	       //Important: Must be introduced AFTER the profiles
 	       for (a=0; a<n_aln_file_list; a++)
@@ -4375,7 +4375,7 @@ get_cl_param(\
 		   free_sequence (ExS, ExS->nseq);
 		   free_aln (ExA);
 		 }
-	       	       
+
 	       /*FETCH THE STRUCTURES INTRODUCED WITH -pdb and add them to -in*/
 	       if ( n_pdb)
 		 {
@@ -4394,20 +4394,20 @@ get_cl_param(\
 			 }
 		     }
 		 }
-	      
+
 	       /*Check That Enough Methods/Libraries/Alignments Have been Chiped in*/
-	       
+
 	       if (list_file)
 		 {
 		   int *nn;
 		   nn=(int*)vcalloc ( 256, sizeof (int));
 		   for (a=0; a<n_list; a++)
 		     {
-		       
+
 		       if ( !check_file_exists(list_file[a]))
 			 {
 			   nn[(int)list_file[a][0]]++;
-			   
+
 			 }
 		       else
 			 {
@@ -4422,8 +4422,8 @@ get_cl_param(\
 			     }
 			 }
 		     }
-		   
-		   
+
+
 		   /**
 		    * If no alignment A, library L or method M is in the list of infiles (that means in \c list_files[]),
 		    * T-Coffee will add a default method here. The default method is currently \b Mproba_pair.
@@ -4436,17 +4436,17 @@ get_cl_param(\
 		     }
 		   vfree (nn);
 		 }
-	      
+
 /*FILL THE F STRUCTURE (Contains Information for Output names For the defaults)*/
-	     
-	       	       
+
+
 	       if (n_list==0 || argc<=1)
 		 {
 		   fprintf ( stderr, "\nERROR: You have NOT provided enough arguments [FATAL:%s]", PROGRAM);
 		   myexit (EXIT_FAILURE);
 		 }
-	       
-	       
+
+
 	       /**
 	     * Check the content of each input file and report possible errors.
 	     */
@@ -4455,12 +4455,12 @@ get_cl_param(\
 
 		   if (check_file_exists(argv[1]))F=parse_fname(argv[1]);
 		   else if ( check_file_exists(argv[1]+1))F=parse_fname(argv[1]+1);
-		 
+
 		 }
 	       else if (infile[0])
 		 {
-		   
-		   
+
+
 		   if (isvtmpnam (infile))
 		     {
 		       F=parse_fname("output");
@@ -4468,7 +4468,7 @@ get_cl_param(\
 		   else if ( strstr (infile,"stdin"))F=parse_fname(infile);
 		   else if ( check_file_exists (infile))F=parse_fname(infile);
 		   else if (check_file_exists (infile+1))F =parse_fname(infile+1);
-		   
+
 		 }
 	       else if ( exon_boundaries && exon_boundaries[0])
 		 {
@@ -4514,8 +4514,8 @@ get_cl_param(\
 		      }
 
 		  }
-	        
-	       
+
+
 	       /*Get Structures*/
 	       for ( a=0; a< n_list; a++)
 		 {
@@ -4526,14 +4526,14 @@ get_cl_param(\
 		       sprintf(buf, "%s", list_file[a]+1);
 		       b2=is_pdb_struc (buf);
 		       if (b2)sprintf(list_file[a], "P%s",b2);
-		       else 
+		       else
 			 {
 			   myexit(fprintf_error (stderr, "\nERROR: Could not find PDB structure %s [FATAL:%s]",list_file[a], PROGRAM));
 			 }
 		     }
 		 }
-	       
-	       
+
+
 	       /*FATAL: NO SEQUENCES*/
 
 	       if (!F)
@@ -4545,7 +4545,7 @@ get_cl_param(\
 
 
 	       identify_list_format      (list_file, n_list);
-	       
+
 
 	       /**
 	        * First non-error output: List the Input files, which are usually a sequence
@@ -4556,7 +4556,7 @@ get_cl_param(\
 			*         Input File (M) proba_pair
 	        * \endcode
 	        */
-	       
+
 	       fprintf (le, "\nINPUT FILES\n");
 	       for ( a=0; a< n_list; a++)
 		   {
@@ -4576,7 +4576,7 @@ get_cl_param(\
 		     else fprintf (le, "\n");
 		   }
 
-	       
+
 /*CONVERT, ALIGN OR EVALUATE: CHOSE THE RIGHT VERB*/
 	       /*Set the Hierarchy of the verbs*/
 	       /*The first one decides...*/
@@ -4645,7 +4645,7 @@ get_cl_param(\
 	          {
 		  for (a=0; a< n_out_aln_format; a++)
 		    {
-		      
+
 		      sprintf ( tot_out_aln[a]   ,"%s%s.%s"      ,F->path,F->name,out_aln_format[a]);
 		    }
 		  }
@@ -4656,7 +4656,7 @@ get_cl_param(\
 		      sprintf ( tot_out_aln[a]   ,"%s%s.%s", F->path  ,out_aln, out_aln_format[a]);
 		  }
 
-	       
+
 
 	       if ( F && strm ( out_lib  , "default"))sprintf ( out_lib   ,"%s%s.tc_lib",F->path     , F->name);
 
@@ -4679,10 +4679,10 @@ get_cl_param(\
 /*                           Input Sequences and Library                                               */
 /*                                                                                                     */
 /*******************************************************************************************************/
-	      
+
 	       set_methods_limits (method_limits,n_method_limits,list_file, n_list, &maxnseq, &maxlen);
 	       /*Set Global Values*/
-	      
+
 
 
 
@@ -4696,14 +4696,14 @@ get_cl_param(\
 	        *       As far as I know, it's main purpose is the method \b blastr_pair which is used in the special mode blastr.
 	        *       See the source code of ::precompute_blast_db for mmore information.
 	        * */
-	       
+
 	       S=read_seq_in_n_list   (list_file, n_list, type,seq_source);
-	       
+
 	       if (maxnseq!=-1 && S->nseq>maxnseq)
 		 {
 		   printf_exit ( EXIT_FAILURE,stderr, "\nNumber of sequences (%d) exceeds the allowed maximum (%d) [FATAL:%s]", S->nseq,maxnseq, PROGRAM);
 		 }
-	       
+
 	       S=precompute_blast_db(S,method_list, n_method_list);
 
 	       if ( check_type)
@@ -4733,7 +4733,7 @@ get_cl_param(\
 	        * if wanted (::transform_sequence).
 	        *
 	        */
-	       
+
 	       if ( transform && transform[0])
 		 {
 		   S=transform_sequence (S, transform);
@@ -4782,7 +4782,7 @@ get_cl_param(\
 	        * This function allocates memory for a Constraint_list and sets the Constraint_list::residue_index
 	        * to default values.
 	        */
-	      
+
 	       CL=declare_constraint_list ( S,NULL, NULL, 0,(strm(mem_mode, "disk"))?tmpfile():NULL, NULL);
 
 	       sprintf ( CL->method_evaluate_mode, "%s", method_evaluate_mode);
@@ -4846,29 +4846,29 @@ get_cl_param(\
 		   cputenv ("num_iterations_4_BLAST=%d", psiJ);
 		   cputenv ("outdir_4_BLAST=%d", get_cache_dir());
 		   cputenv ("thread_4_BLAST=%d",get_nproc());
-		   
+
 		   fprintf ( le, "\nPrecompute the Blasts -- Use Cache if available\n");
 		   seq2blast (S);
 		 }
-		     
-		     
+
+
 	       if ( n_template_file)
 		 {
 		   fprintf ( le, "\nLooking For Sequence Templates:\n");
 		   for ( a=0; a< n_template_file; a++)
 		     {
 
-		       
+
 		       //correct for missing extension modes
 		       if (strm (template_file_list[a],"RNA") && !strstr (extend_mode, "rna"))sprintf ( extend_mode, "rna2");
 
 
 		       fprintf ( le, "\n\tTemplate Type: [%s] Mode Or File: [%s] [Start", template_type2type_name(template_file_list[a]), template_file_list[a]);
-		       
-		       
+
+
 		       S=seq2template_seq(S, template_file_list[a], F);
 		       fprintf ( le, "]");
-		       
+
 		       if (S==NULL)
 			 {
 			   add_warning (stderr, "Impossible to find %s Templates\nCheck that your blast server is properly installed [See documentation][FATAL:%s]\n", template_file_list[a],PROGRAM);
@@ -5049,11 +5049,11 @@ get_cl_param(\
 	        * \sa Constraint_list::residue_index to understand how \b CL stores edges/constraints.
 	        *
 	        */
-	       
+
 	       if ((CL->S)->nseq>1 && !do_convert)
 		 {
 		   CL=read_n_constraint_list (list_file,n_list,NULL, mem_mode,weight,type, le, CL, seq_source);
-		   
+
 		   //CL=post_process_constraint_list (CL); //needed when constraints are added, for instance the RNA modes
 		 }
 	       else if ( do_convert && out_lib[0])
@@ -5073,7 +5073,7 @@ get_cl_param(\
 	       //And the CL may be used in different contexts
 	       CL=CL2simCL (CL);
 
-	       
+
 	       if ( CL->M)clean_aln=0;
 
 	       if ( is_number (weight))set_weight4constraint_list (CL, atoi(weight));
@@ -5083,10 +5083,10 @@ get_cl_param(\
 	        * That's why ::free_pair_wise is called here.
 	        */
 	       free_pair_wise ();
-	       
-	       
-	       
-	
+
+
+
+
 	       /**
 	        * If the Constraint_list should, for some reason, be empty afterwards, report an Error.
 	        */
@@ -5190,10 +5190,10 @@ get_cl_param(\
 			* If this was all you wanted to do (\c lib_only), exit the program afterwards.
 			*
 			*/
-	       
+
 	       if (CL->ne>0 && out_lib[0]!='\0' && !strm (out_lib, "no"))
 	         {
-		   
+
 		   if (strstr (out_lib_mode, "extended"))
 		     {
 		       char emode[1000];
@@ -5216,7 +5216,7 @@ get_cl_param(\
 		 }
 
 	      if ( lib_only)return EXIT_SUCCESS;
-	      
+
 
 	      /**
 	       * Extension step:
@@ -5333,10 +5333,10 @@ get_cl_param(\
 			 }
 		       if (!CL->gop)CL->gop=-20;
 		       if (!CL->gep)CL->gep=-2;
-		       
+
 		       CL->get_dp_cost=get_dp_cost_sankoff_tree;
 		       CL->pair_wise=gotoh_pair_wise;
-		       
+
 		       pc=tree_file;
 		       if ( strm (tree_file, "default") || !check_file_exists (tree_file))
 			 {
@@ -5476,12 +5476,12 @@ get_cl_param(\
 
 
 		   A=(infile[0])?main_read_aln ( infile, declare_aln(CL->S)):NULL;
-		   
+
 		   if (!A)A=seq2aln((CL->S), NULL,0);
 
 
 		   A->S=CL->S;
-		   		   
+
 		   A->nseq=(CL->S)->nseq;
 
 
@@ -5618,9 +5618,9 @@ get_cl_param(\
 			  output_format_aln ("overaln", A, NULL, over_aln_tmp);
 			  A=main_read_aln (over_aln_tmp,A);
 			}
-		      
+
 		      EA=main_coffee_evaluate_output(A, CL, evaluate_mode);
-		      
+
 
 		      //correct ascii file
 		      if (clean_overaln)
@@ -5644,9 +5644,9 @@ get_cl_param(\
 		      fprintf (le, "\n\nOUTPUT RESULTS");
 		      if ((CL->S)->nseq>2)
 			le=display_output_filename (le, "GUIDE_TREE","newick", tree_file, CHECK);
-		      
-		      
-		      
+
+
+
 		      for ( a=0; a< n_out_aln_format; a++)
 			le=display_output_filename( le,"MSA",out_aln_format[a], tot_out_aln[a], CHECK);
 		      if (CL->ne>0 && out_lib[0]!='\0' && !strm (out_lib, "no"))
@@ -5779,10 +5779,10 @@ get_cl_param(\
 	      if (remove_template_file){S=vremove_seq_template_files(S);}
 	      else
 		{
-		  
+
 		  S=display_seq_template_files (S);
 		}
-	      
+
 	      //fLUSH OUT THE NAME OF ALL THE FILES THAT HAVE BEEN PRODUCED
 
 	      le=display_output_filename (le, NULL, NULL, NULL, FLUSH);
@@ -6100,23 +6100,23 @@ char *get_rcoffee_defaults(char *buf, char *type)
      return buf;
    }
 char *get_rsapcoffee_defaults(char *buf, char *type)
-{ 
+{
   if (buf==NULL)buf=(char*)vcalloc (1000, sizeof (char));
   check_program_is_installed (SAP_4_TCOFFEE,NULL, NULL,SAP_ADDRESS, INSTALL_OR_DIE);
   check_program_is_installed (MUSTANG_4_TCOFFEE,NULL, NULL,MUSTANG_ADDRESS, INSTALL_OR_DIE);
-  
+
   buf=strcat (buf,"-method sap_pair -template_file=RNA -extend_mode rna2 -output clustalw,html -transform dna2rna");
-  
+
   return buf;
    }
 char *get_saracoffee_defaults(char *buf, char *type)
    {
 
      if (buf==NULL)buf=(char*)vcalloc (1000, sizeof (char));
-     
+
      check_program_is_installed ("sara.py",NULL, NULL,"http://structure.biofold.org/sara",INSTALL_OR_DIE);
      buf=strcat (buf,"-method sara_pair -template_file=RNA -extend_mode rna2 -relax_lib 0 -output clustalw,html -transform dna2rna");
-     
+
      return buf;
    }
 
@@ -6153,7 +6153,7 @@ char *get_sample_defaults(char *buf, char *type)
      if (buf==NULL)buf=(char*)vcalloc (1000, sizeof (char));
 
      buf=strcat (buf,"-extend_mode matrix -dp_mode gotoh_pair_wise -sample_dp -in Xblosum62mt");
-     
+
      return buf;
    }
 char *get_highlow_defaults(char *buf, char *type)
@@ -6162,7 +6162,7 @@ char *get_highlow_defaults(char *buf, char *type)
      if (buf==NULL)buf=(char*)vcalloc (1000, sizeof (char));
 
      buf=strcat (buf,"-in Xblosum62mt -dp_mode gotoh_pair_wise_test");
-     
+
      return buf;
    }
 
@@ -6306,7 +6306,7 @@ Sequence* prepare_master (char *seq, Sequence *S, Constraint_list *CL, char *dmo
    int trim_mode=2;
    int **lu=NULL;
    char ttag;
-   
+
    char tmode[100];
    int nseq=0;
    CL->master=(int*)vcalloc (S->nseq+1, sizeof(int));
@@ -6323,29 +6323,29 @@ Sequence* prepare_master (char *seq, Sequence *S, Constraint_list *CL, char *dmo
        for (a=0; a<S->nseq; a++)CL->master[a]=1;
        return NULL;
      }
-   
+
    //figure out the number of sequences to keep as a master
    nseq=0;
    if ( is_number (seq) || strstr (seq, "_N") || strstr (seq, "_n"))
      {
        char ttag;
-       
+
        if      ( strstr (seq, "_N_")){nseq=atoi (strstr(seq, "_N_")+strlen ("_N_"));ttag='N';}
        else if ( strstr (seq, "_n_")){nseq=atoi (strstr(seq, "_n_")+strlen ("_n_"));ttag='n';}
        else if ( strstr (seq, "_N")){nseq=atoi (strstr(seq, "_N")+strlen ("_N"));ttag='N';}
        else if ( strstr (seq, "_n")){nseq=atoi (strstr(seq, "_n")+strlen ("_n_"));ttag='n';}
        else {nseq=atoi (seq);ttag='n';}
-       
-       if ( ttag=='N')nseq=((float)S->nseq*((float)nseq/(float)100.0));  
+
+       if ( ttag=='N')nseq=((float)S->nseq*((float)nseq/(float)100.0));
      }
-  
+
    //if no seqiuences or all, keep everything and return
    if ( nseq>=S->nseq || nseq==0)
      {
        for (a=0; a<(CL->S)->nseq; a++)CL->master[a]=1;
        return NULL;
      }
-  
+
    //If keep tghe nlonguest make a sorted list of sequence indexes
    if ( strstr (seq, "_NLONG_"))
      {
@@ -6362,13 +6362,13 @@ Sequence* prepare_master (char *seq, Sequence *S, Constraint_list *CL, char *dmo
 	 }
        lu=free_int (lu, -1);
      }
-   
+
    //prepare a special library mode using the most commected sequences only
    if ( strstr (seq, "_PLIB_"))
      {
        set_int_variable ("N_4_PLIB", atoi (strstr(seq, "_PLIB_")+strlen ("_PLIB_")));
      }
-   
+
    //Keep all sequences with a known structure
    if ( strstr (seq, "_P_"))
      {
@@ -6377,19 +6377,19 @@ Sequence* prepare_master (char *seq, Sequence *S, Constraint_list *CL, char *dmo
 	   if (seq_has_template (S, a, "_P_"))CL->master[a]=1;
 	 }
      }
- 
+
    //Keep only the most informative sequences according to simple trim
    //Criteria depends on a pairwise distance estimate provided by dmode
    if (strstr (seq, "_TRIM_"))
      {
        Alignment *A,*SA;
        char **name;
-       
+
        A=(strm (dmode, "msa"))?(very_fast_aln (seq2aln (S, NULL, RM_GAP), 0, NULL)):(seq2aln (S, NULL, RM_GAP));
-       
+
        if (strstr (dmode,"_kmeans_"))sprintf (tmode, "_kmeans_n%d_", nseq);
        else sprintf (tmode, "_aln_%c%d_", ttag,nseq);
-       
+
        fprintf ( CL->local_stderr, "------- Master Mode For Trimming: %s\n", tmode);
        SA=simple_trimseq (A, NULL, tmode, NULL, NULL);
        nseq=SA->nseq;
@@ -6416,9 +6416,9 @@ Sequence* prepare_master (char *seq, Sequence *S, Constraint_list *CL, char *dmo
 	 }
        CL->master[ls]=1; //keep the longest seqquence
      }
-   
+
    fprintf ( CL->local_stderr, "\n");
-   
+
    for (b=0,a=0; a<S->nseq; a++)
      {
        if ( CL->master[a])
@@ -6491,7 +6491,7 @@ char * get_seq_type_from_cl (int argc, char **argv)
   sprintf (file, "%d.tmp", rand()%10000);
   buf=(char*)vcalloc ( 10000, sizeof (char));
   sprintf ( buf, "%s ", get_string_variable ("t_coffee"));
-  
+
   for (a=1, seq=0; a<argc; a++)
     {
       if ( check_file_exists (argv[a]))seq=1;
@@ -6564,7 +6564,7 @@ char** km_coffee (int argc, char **argv)
 		  {
 		    seq_f=argv[++a];
 		  }
-		
+
 		else if ( strm (argv[a], "-mode"))
 		  {++a;}
 		else if ( strm (argv[a], "-km_mode"))
@@ -6609,15 +6609,15 @@ char** km_coffee (int argc, char **argv)
 		  {
 		    new_argv[new_argc++]=argv[a];
 		  }
-		
+
 	}
-	
-	
+
+
 	//Set the default values
 	if (!out_f){declare_name(out_f);sprintf (out_f, "%s.aln", seq_f);}
 	if (!k)k=10;
-	
-	
+
+
 
 	if (seq_f==NULL)
 	  {
@@ -6644,8 +6644,8 @@ char** km_coffee (int argc, char **argv)
 	    F=parse_fname (seq_f);
 	    if (!k)k=100;
 	    if (S->nseq<=k)k=S->nseq;
-	    
-	    
+
+
 	    if (!km_mode || strm (km_mode, "topdown"))
 	      {
 		A=seq2aln(S,NULL, RM_GAP);
@@ -6660,7 +6660,7 @@ char** km_coffee (int argc, char **argv)
 	      {
 		km_coffee_align3 (S,km_tree,k, out_f, new_argc,new_argv);
 	      }
-	    
+
 	    else
 	      myexit(fprintf_error (stderr,"Please specify km_mode (topdown/bottomup/km_fast/updown)!\n"));
 	  }
@@ -7053,7 +7053,7 @@ Alignment * km_coffee_align2 (Sequence *S, char *km_tree, int k, int argc, char 
 	}
 	T=main_read_tree (km_tree2);
 	tree_aln_N(T,S, k, argc, argv);
-	
+
 	myexit (EXIT_SUCCESS);
 	return NULL;
 }
@@ -7061,22 +7061,22 @@ Alignment * km_coffee_align2 (Sequence *S, char *km_tree, int k, int argc, char 
 Alignment * km_coffee_align3 (Sequence *S, char *km_tree, int k, char *out_f, int argc, char **argv)
 {
 
-  
+
   char *km_tree2=vtmpnam (NULL);
   NT_node T;
   int n;
-  
+
   //This insures that the function aln2cons_cov is used to generate the consensus
   //cputenv ("KM_COFFEE_CONS_COV=1");
-  
+
   //This insures that  get_tot_prob estimates prf/prf alignments using the cons and not the voectorized MSA
   //cputenv ("KM_COFFEE_PRF_CONS=1");
-  
+
   //Split profiles can be triguered by adding to any method:-method <method>@EP@PRFMODE@prf1-2 or3
   //@EP@PRFMODE@prf1: pick the N sequences covering entirely the prf
   //@EP@PRFMODE@prf2: make a consensus sequence patching the most covering sequences
   //@EP@PRFMODE@prf3: make a consensus sequence using blosum62mt
-  
+
 
   if (strm (km_tree, "kmeans")){
     seq2km_tree_old (S, km_tree2);}
@@ -7088,16 +7088,16 @@ Alignment * km_coffee_align3 (Sequence *S, char *km_tree, int k, char *out_f, in
     {
       printf_system ("cp %s %s", km_tree, km_tree2);
     }
-  	
+
   T=main_read_tree (km_tree2);
   updown_tree_aln (T,S, k,&n, argc, argv);
-  
-  
+
+
   if (!check_file_exists (T->alfile))
     {
       printf_exit ( EXIT_FAILURE, stderr, "kmcoffee did not manage to align the provided dataset\n");
     }
-  
+
   printf_system ("mv %s %s", T->alfile, out_f);
   display_output_filename(stdout,"MSA","ALN",out_f, CHECK);
   fprintf (stdout, "\n\n");
@@ -7133,16 +7133,16 @@ Alignment * t_coffee_dpa (int argc, char **argv)
   int reg_dynamic=1;
   int reg_pool=0;
   int n_core=1;
-  
+
   /* This is used for the dump function see -dump option*/
   declare_name (se_name);
   sprintf (se_name, "stderr");
   le=get_stdout1(se_name);
-  
-  
+
+
   command=(char*)vcalloc (10000, sizeof (char));
   sprintf ( command, "#");
-  
+
   //default values
   set_int_variable ("swlN",50);
   set_string_variable ("output", "fasta_aln");
@@ -7154,18 +7154,18 @@ Alignment * t_coffee_dpa (int argc, char **argv)
   //Set Some Defaults that can be over-written by the CL parsing below
   //Note that by default ALL flag get added to the env variable <name>_4_CLTCOFFEE. These variables are then used to construct the slave CL in dynamic.pl
   cputenv ("blast_server_4_CLTCOFFEE=LOCAL");
- 
+
   for (a=1; a<argc; a++)
     {
-      
+
       if ( argv[a][0]!='-')
 	{
 	  myexit (fprintf_error (stderr, "%s is an unknown flag of the -reg mode [FATAL:%s]", argv[a],PROGRAM));
 	}
-      
+
       if (strm (argv[a], "-seq" ))
 	{
-	  
+
 	  seqfile=argv[++a];
 	  S=quick_read_seq (seqfile);
 	  seqflag=1;
@@ -7186,7 +7186,7 @@ Alignment * t_coffee_dpa (int argc, char **argv)
 	}
       else if (strm (argv[a],"-child_tree"))
 	{
-	  cputenv ("child_tree_4_TCOFFEE=%s", argv[++a]);	  
+	  cputenv ("child_tree_4_TCOFFEE=%s", argv[++a]);
 	}
       else if (strm (argv[a],"-child_thread"))
 	{
@@ -7197,7 +7197,7 @@ Alignment * t_coffee_dpa (int argc, char **argv)
 	  cputenv ("dynamic_config_4_TCOFFEE=%s", (fname2abs(argv[a+1])));
 	  a++;
 	}
-      
+
       else if ( strm(argv[a], "-reg_chaindnd_mode"))
 	{
 	  set_string_variable ("reg_chaindnd_mode",argv[++a]);
@@ -7214,7 +7214,7 @@ Alignment * t_coffee_dpa (int argc, char **argv)
 	{
 	  set_string_variable ("reg_dnd_mode",argv[++a]);
 	}
-	
+
       else if (strm (argv[a],"-dpa_swlN")|| strm (argv[a],"-reg_swlN") )
 	{
 	  set_int_variable ("swlN",atoi (argv[++a]));
@@ -7228,9 +7228,9 @@ Alignment * t_coffee_dpa (int argc, char **argv)
 	{
 	  n_core=atoi(argv[++a]);
 	}
-       
+
       else if (strm (argv[a],"-dpa")|| strm (argv[a],"-reg"));
-      
+
       else if (strm (argv[a],"-usetree"))
 	{
 	  usetree=argv[++a];
@@ -7254,17 +7254,17 @@ Alignment * t_coffee_dpa (int argc, char **argv)
       else if (strm (argv[a],"-dynamic") || strm (argv[a],"-reg_dynamic") )
 	{
 	  reg_dynamic=atoi(argv[++a]);
-	  
+
 	}
       else if (strm (argv[a],"-pool")  )
 	{
 	  reg_pool=1;
-	  
+
 	}
       else if (strm (argv[a],"-compact")  )
 	{
 	  cputenv ("COMPACT_4_TCOFFEE=1");
-	  
+
 	}
       else if (strm (argv[a], "-method") || strm (argv[a], "-dpa_method") || strm (argv[a], "-reg_method"))
 	{
@@ -7278,11 +7278,11 @@ Alignment * t_coffee_dpa (int argc, char **argv)
 	{
 	  myexit (fprintf_error (stderr, "%s is not supported when using -dpa [FATAL:%s]", argv[a],PROGRAM));
 	}
-     
+
       else if ( strstr (argv[a], "reg_homoplasy"))
 	{
 	  homoplasy=(char*)vcalloc ( 1000, sizeof (char));
-	 
+
 	}
       else if (argv[a][0]=='-' &&(a==argc-1 || argv[a+1][0]=='-'))
 	{
@@ -7300,7 +7300,7 @@ Alignment * t_coffee_dpa (int argc, char **argv)
 	    }
 	  if (ml)cputenv ("method_4_CLTCOFFEE=%s", ml);
 	}
-      else if (argv[a][0]=='-')       
+      else if (argv[a][0]=='-')
 	{
 	  if (getenv("DEBUG_4_TCOFFEE"))
 	    {
@@ -7308,9 +7308,9 @@ Alignment * t_coffee_dpa (int argc, char **argv)
 	    }
 	  cputenv ("%s_4_CLTCOFFEE=%s", argv[a]+1,fname2abs(argv[a+1]));
 	  a++;
-	  
+
 	}
-      else 
+      else
 	{
 	   myexit (fprintf_error (stderr, "%s is an unknown flag of the -reg mode [FATAL:%s]", argv[a],PROGRAM));
 	}
@@ -7325,29 +7325,29 @@ Alignment * t_coffee_dpa (int argc, char **argv)
       system ("printenv");
       HERE ("******* Environement: end*****");
     }
-      
+
 
   //Core management
- 
+
   if (n_core==0)n_core=get_nproc();
   set_nproc (n_core);
   set_int_variable ("n_core",n_core);
-  
+
 
   //Dynamic regression
   set_int_variable ("reg_dynamic",reg_dynamic);
   set_int_variable ("reg_pool",reg_pool);
-  
+
   //Set the cache
   if (!cache)cache=csprintf (NULL,"use");
   prepare_cache (cache);
   cputenv ("cache_4_TCOFFEE=%s", get_cache_4_tcoffee());
   cputenv ("cache_4_CLTCOFFEE=%s", get_cache_4_tcoffee());
-  
+
   //prepare the aligner CL
   if (dpa_aligner)
     {
-      
+
       command=(char*)vcalloc (10000, sizeof (char));
       sprintf ( command, "%s", dpa_aligner);
     }
@@ -7356,13 +7356,13 @@ Alignment * t_coffee_dpa (int argc, char **argv)
       command=(char*)vcalloc (10000, sizeof (char));
       sprintf (command, "clustalo_msa");
     }
-  
+
 
   //prepare output names
   //output the MSA
   F=parse_fname(seqfile);
   if (run_name){vfree(F->name); F->name=run_name;F->path[0]='\0';}
-  
+
   if (!outfile)
     {
       outfile=(char*)vcalloc ( 1000, sizeof (char));
@@ -7374,10 +7374,10 @@ Alignment * t_coffee_dpa (int argc, char **argv)
       sprintf (homoplasy, "%s.homoplasy", F->name);
       set_string_variable("homoplasy", homoplasy);
     }
-  
-  
+
+
   //check Sequences are here
-  
+
   if (!seqflag)
     myexit (fprintf_error ( stderr, "\nERROR: When using -reg, sequences must be provided via -seq [FATAL:%s]", PROGRAM));
   else if (!S)
@@ -7392,49 +7392,49 @@ Alignment * t_coffee_dpa (int argc, char **argv)
   fprintf ( le, "!Maximum N Threads --- %d\n",get_nproc());
   //prepare the guide tree
   fprintf ( le, "!Compute Guide Tree --- ");
-  
+
   if (usetree){dpa_tree=usetree;}
   if (!dpa_tree)dpa_tree="codnd";
   if (strm (dpa_tree, "dpa"))
     {
-      
+
       T=seq2dnd (S, "blength");
       w=seq2dpa_weight (S, "longuest");
       T=node2master (T, S, w);
       T=tree2dnd4dpa(T, S, dpa_nseq, command);
-      
+
     }
   else
     T=seq2dnd (S, dpa_tree);
   fprintf ( le, " reg_tree %s\n", dpa_tree);
-  
+
   if (dpa_tree && check_file_exists (dpa_tree))output_dpa_tree=0;
   else output_dpa_tree=1;
-  
+
   //Save Guide Tree for Children Aligners
-  
+
   fprintf ( le, "!Compute Guide Tree ---  done\n");
-  
- 
-  
-  
+
+
+
+
   //get the weight
   fprintf (le, "!Compute Weights --- ");
   if (dpa_weight){w=seq2dpa_weight (S, dpa_weight); fprintf ( le, "%s\n", dpa_weight);}
   else { w=seq2dpa_weight (S, "longuest");fprintf ( le, "default longuest\n", dpa_weight);}
   fprintf ( le, "!Compute Weights --- done\n");
-  
+
   //run the alignment
   fprintf (le, "!Compute MSA --- reg_method %s -- reg_nseq %d -- start\n", command, dpa_nseq);
   T=node2master (T, S, w);
-  
+  fprintf ( le, "!Compute MSA ------------------------------------------------------------- here\n");
   alnfile=tree2msa4dpa(T, S, dpa_nseq, command);
   fprintf ( le, "!Compute MSA --- done\n");
- 
+
   printf_system ("mv %s %s", alnfile, outfile);
   display_output_filename (le, "MSA",get_string_variable ("output"),outfile, CHECK);
   if (homoplasy)display_output_filename (le, "HOMOPLASY","homoplasy",homoplasy, CHECK);
-  
+
   //output The tree
   if (output_dpa_tree)
     {
@@ -7446,7 +7446,7 @@ Alignment * t_coffee_dpa (int argc, char **argv)
       print_newick_tree (T,newtree);
       display_output_filename (le, "TREE","newick",newtree, CHECK);
     }
-  
+
   //terminate
   fprintf (le,"\n\n");
   print_command_line (le);

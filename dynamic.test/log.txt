@@ -1,0 +1,96 @@
+
+![dynamic.pl] --- -dynamic_config FILE: 
+
+![dynamic.pl] --- FILE content: tcoffee_msa 2
+
+
+![dynamic.pl] --- -dynamic_config --- tcoffee_msa :: 2
+
+![dynamic.pl] --- FILE content: famsa_msa 2
+
+
+![dynamic.pl] --- -dynamic_config --- famsa_msa :: 2
+
+![dynamic.pl] --- SysCall --- mv /tmp/WZY9CRvD2U 0
+
+![dynamic.pl] --- get_psicl --- -blast_server LOCAL -cache /home/luisasantus/.t_coffee//cache/ 
+
+![dynamic.pl] --- CL4tc == -blast_server LOCAL -cache /home/luisasantus/.t_coffee//cache/    -thread 1  
+
+![dynamic.pl] --- cmethod == famsa
+
+![dynamic.pl] --- FAMSA DEFAULT
+
+![dynamic.pl] --- SysCall --- famsa  -t 1  /var/tmp/tco/tcot_dwhq5z36867/833136867m_gmj5 /var/tmp/tco/tcot_dwhq5z36867/833136867m_gmj6 >/dev/null 2>/tmp/Q56q9J2Swh/stderr
+
+![dynamic.pl] --- CDIR: /home/luisasantus/Desktop/tcoffee/dynamic.test
+
+![dynamic.pl] --- Processed 2
+
+
+![dynamic.pl] --- -method dynamic_msa -seq /var/tmp/tco/tcot_dwhq5z36867/833136867m_gmj5 -outfile /var/tmp/tco/tcot_dwhq5z36867/833136867m_gmj6 -tree default 
+![dynamic.pl] --- EXIT: 0 (0:success, 1:failure)-- Verbose mode -- unset VERBOSE_4_DYNAMIC to turn verbose mode off
+
+![dynamic.pl] --- -dynamic_config FILE: 
+
+![dynamic.pl] --- FILE content: tcoffee_msa 2
+
+
+![dynamic.pl] --- -dynamic_config --- tcoffee_msa :: 2
+
+![dynamic.pl] --- FILE content: famsa_msa 2
+
+
+![dynamic.pl] --- -dynamic_config --- famsa_msa :: 2
+
+![dynamic.pl] --- SysCall --- mv /tmp/FUHqWeIION 0
+
+![dynamic.pl] --- get_psicl --- -cache /home/luisasantus/.t_coffee//cache/ -blast_server LOCAL 
+
+![dynamic.pl] --- CL4tc == -cache /home/luisasantus/.t_coffee//cache/ -blast_server LOCAL    -thread 1  
+
+![dynamic.pl] --- cmethod == tcoffee
+
+![dynamic.pl] --- SysCall --- t_coffee -seq /var/tmp/tco/tcot_dwhq5z36867/833136867m_gmj7 -outfile /var/tmp/tco/tcot_dwhq5z36867/833136867m_gmj8 -output fasta_aln -cache /home/luisasantus/.t_coffee//cache/ -blast_server LOCAL    -thread 1  >/dev/null  2>/tmp/mq4qInPl6Q/stderr
+
+![dynamic.pl] --- CDIR: /home/luisasantus/Desktop/tcoffee/dynamic.test
+
+![dynamic.pl] --- Processed 2
+
+
+![dynamic.pl] --- -method dynamic_msa -seq /var/tmp/tco/tcot_dwhq5z36867/833136867m_gmj7 -outfile /var/tmp/tco/tcot_dwhq5z36867/833136867m_gmj8 -tree default 
+![dynamic.pl] --- EXIT: 0 (0:success, 1:failure)-- Verbose mode -- unset VERBOSE_4_DYNAMIC to turn verbose mode off
+
+![dynamic.pl] --- -dynamic_config FILE: 
+
+![dynamic.pl] --- FILE content: tcoffee_msa 2
+
+
+![dynamic.pl] --- -dynamic_config --- tcoffee_msa :: 2
+
+![dynamic.pl] --- FILE content: famsa_msa 2
+
+
+![dynamic.pl] --- -dynamic_config --- famsa_msa :: 2
+
+![dynamic.pl] --- SysCall --- mv /tmp/EMQQVXOsTo 0
+
+![dynamic.pl] --- get_psicl --- -cache /home/luisasantus/.t_coffee//cache/ -blast_server LOCAL 
+
+![dynamic.pl] --- CL4tc == -cache /home/luisasantus/.t_coffee//cache/ -blast_server LOCAL    -thread 1  
+
+![dynamic.pl] --- cmethod == famsa
+
+![dynamic.pl] --- FAMSA DEFAULT
+
+![dynamic.pl] --- SysCall --- famsa  -t 1  /var/tmp/tco/tcot_dwhq5z36867/833136867m_gmj9 /var/tmp/tco/tcot_dwhq5z36867/833136867m_gmj10 >/dev/null 2>/tmp/ZjXtnmuzLn/stderr
+
+![dynamic.pl] --- CDIR: /home/luisasantus/Desktop/tcoffee/dynamic.test
+
+![dynamic.pl] --- Processed 2
+
+
+![dynamic.pl] --- -method dynamic_msa -seq /var/tmp/tco/tcot_dwhq5z36867/833136867m_gmj9 -outfile /var/tmp/tco/tcot_dwhq5z36867/833136867m_gmj10 -tree default 
+![dynamic.pl] --- EXIT: 0 (0:success, 1:failure)-- Verbose mode -- unset VERBOSE_4_DYNAMIC to turn verbose mode off
+PROGRAM: T-COFFEE Version_13.45.60.cd84d2a (Version_13.45.60.cd84d2a) -- regressive mode
+PROGRAM: T-COFFEE Version_13.45.60.cd84d2a (Version_13.45.60.cd84d2a) -- regressive mode

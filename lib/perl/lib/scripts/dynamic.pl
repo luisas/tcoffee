@@ -48,15 +48,15 @@ for ($a=0; $a<=$#ARGV; $a++)
     	$dynamic=file2abs($ARGV[++$a]);
     	if ($VERBOSE){print "\n![dynamic.pl] --- -dynamic_config flag if/else--- $dynamic\n";}
 	}
-    
+
     elsif ($ARGV[$a] eq "-tree") {$tree=$ARGV[++$a];}
     elsif ($ARGV[$a] eq "-method") {$method2use=$ARGV[++$a];}
     elsif ($ARGV[$a] eq "-verbose"){$VERBOSE=1; $QUIET="";}
     elsif ($ARGV[$a] eq "-clean"){$clean=1;}
-  
+
     elsif ($ARGV[$a] eq "-thread"){$thread=$ARGV[++$a]}
     elsif ($ARGV[$a] eq "-tcarg") {$tcarg=file2string($ARGV[++$a]);}
-    else 
+    else
       {
 	add2tcenv($a++,@ARGV);
       }
@@ -78,7 +78,7 @@ if ($method2use eq "list")
   {
     my %ml;
     my $listfile="$tmpdir/list";
-    
+
     $ml{tcoffee}=1;
     $ml{psicoffee}=1;
     $ml{accurate}=1;
@@ -127,7 +127,7 @@ if (!$outfile)
   }
 
 if (!($method2use=~/dynamic/)){;}
-else 
+else
   {
     if (-e $dynamic)
       {
@@ -150,8 +150,8 @@ else
 	$method{"psicoffee_msa"}=50;
 	$method{"famsa_msa"}=1000000000;
       }
-    
-    foreach my $name (sort { $method{$a} <=> $method{$b} } keys %method) 
+
+    foreach my $name (sort { $method{$a} <=> $method{$b} } keys %method)
       {
 	if ($NSEQ<=$method{$name})
 	  {
@@ -185,16 +185,16 @@ if ($tree)
 	    my_system ("t_coffee -other_pg seq_reformat -in $master_tree -in2 $infile -action +prune_tree -output newick > $tmptree");
 	  }
       }
-    else 
+    else
       {
 	my_system ("t_coffee -other_pg seq_reformat -in $infile -action +seq2dnd $tree -output newick> $tmptree");
       }
-    
+
     if ($method2use=~/mafft/)
       {
 	#print "cp $tmptree /Users/cnotredame/.Trash/$$.tmptree\n";
 	#system ("cp $tmptree /Users/cnotredame/.Trash/$$.tmptree");
-	
+
 	my_system ("t_coffee -other_pg seq_reformat -in $tmptree -output mafftdndmatrix> $treeF");
       }
     else
@@ -230,12 +230,12 @@ if ($VERBOSE){print "\n![dynamic.pl] --- cmethod == $cmethod\n";}
 
 if ($cmethod eq "tcoffee"|| $cmethod eq "t_coffee" )
   {
-    my_system ("t_coffee -seq $infile -outfile $outfile -output fasta_aln $CL4tc>/dev/null  $QUIET");    
+    my_system ("t_coffee -seq $infile -outfile $outfile -output fasta_aln $CL4tc>/dev/null  $QUIET");
   }
 elsif ($cmethod=~/(.*coffee)/ || $cmethod=~/(accurate)/ || $cmethod=~/(expresso)/)
   {
     my $mode=$1;
-    my_system ("t_coffee  -mode $mode -seq $infile -outfile $outfile -output fasta_aln $CL4tc >/dev/null  $QUIET");    
+    my_system ("t_coffee  -mode $mode -seq $infile -outfile $outfile -output fasta_aln $CL4tc >/dev/null  $QUIET");
   }
 elsif ($cmethod eq "clustalo")
   {
@@ -249,7 +249,7 @@ elsif (($cmethod =~/mafft/))
   {
     my $mm;
     my $retree;
-    
+
     if ( $cmethod eq "mafft" || $cmethod=~/\-/ )
       {
 	$mm=$cmethod;
@@ -264,13 +264,13 @@ elsif (($cmethod =~/mafft/))
 	$mm=~s/1/i/;
 	$retree="--retree 1 "
       };
-    
+
     my_system ("$mm --anysymbol $threadFlag $treeFlag $retree $infile > $outfile $QUIET");
   }
 
 elsif ($method2use=~/famsa/)
   {
-    print "\n![dynamic.pl] --- FAMSA DEFAULT\n";    
+    print "\n![dynamic.pl] --- FAMSA DEFAULT\n";
     my_system ("famsa $treeFlag $threadFlag4famsa $infile $outfile >/dev/null $QUIET");
   }
 elsif ($method2use=~/famsaUpgma/)
@@ -321,21 +321,21 @@ my_exit ($CDIR,$EXIT_SUCCESS);
 sub file2nseq
   {
     my ($f)=@_;
-    my $n=`grep -c '>' $f`; 
-    
+    my $n=`grep -c '>' $f`;
+
     return $n;
   }
 sub file2abs
     {
       my ($f, $mode)=@_;
-      
+
       if (!$f || $f=~/^\//){return $f;}
       elsif (!-e $f && $mode eq "new"){return "$CDIR/$f";}
       elsif (!-e $f){return $f;}
-    
+
       return "$CDIR/$f";
     }
-sub file2string 
+sub file2string
     {
       my ($f)=@_;
       my $s;
@@ -348,26 +348,26 @@ sub file2string
       close (F);
       chomp($s);
       return $s;
-    }   
+    }
 
 sub get_psicl
       {
 	my ($psitrim, $psitrim_mode, $pisN);
 	my $cl;
-	
+
 	if ($ENV{psitrim_tree_4_TCOFFEE}){$cl.=" -psitrim_tree=".$ENV{psitrim_tree_4_TCOFFEE}." ";}
 	if ($ENV{psitrim_mode_4_TCOFFEE}){$cl.=" -psitrim_mode=".$ENV{psitrim_mode_4_TCOFFEE}." ";}
 	if ($ENV{psitrim_4_TCOFFEE}){$cl.=" -psitrim=".$ENV{psitrim_4_TCOFFEE}." ";}
 	if ($ENV{psiJ_4_TCOFFEE}){$cl.=" -psiJ=".$ENV{psiJ_4_TCOFFEE}." ";}
-	
+
 
 	return $cl;
       }
-      
+
 sub get_cl4tc
 	{
 	  my $cl;
-	  
+
 	  foreach my $arg (keys(%ENV))
 	    {
 	      if ($arg=~/(.*)_4_CLTCOFFEE/)
@@ -375,7 +375,7 @@ sub get_cl4tc
 		  my $name=$1;
 		  my $val=$ENV{$arg};
 		  if (-e $val){$val=file2abs($val);}
-		  
+
 
 		  if ($val eq "FLAGSET"){$val="";}
 		  $cl.="-$name $val ";
@@ -395,7 +395,7 @@ sub add2tcenv
 	      my $envv="$flag\_4_CLTCOFFEE";
 	      $ENV{$envv}=$val;
 	    }
-	      
+
 sub my_exit
     {
       my ($dir,$ec)=@_;
@@ -409,19 +409,19 @@ sub my_exit
 	    {
 	      print "$arg ";
 	    }
-	  
+
 	  print "\n![dynamic.pl] --- EXIT: $ec ($EXIT_SUCCESS:success, $EXIT_FAILURE:failure)-- Verbose mode -- unset VERBOSE_4_DYNAMIC to turn verbose mode off\n";
 	}
       chdir ($dir);
       exit ($ec);
     }
-	      
-sub my_system 
+
+sub my_system
   {
     my ($com)=@_;
     $LAST_COM=$com;
-    
+
     if ($VERBOSE){print "\n![dynamic.pl] --- SysCall --- $com\n";}
-    
+
     system ($com);
   }
