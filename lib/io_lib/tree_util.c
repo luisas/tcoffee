@@ -8985,11 +8985,17 @@ int kseq2kmsa_thread   (NT_node T,KT_node *K, int n, char *method)
 	      initiate_vtmpnam(NULL);//make sure existing tmp are not deleted when exiting.
 	      LK->treeF=tree2child_tree(T,LK->seqF,getenv("child_tree_4_TCOFFEE"));
 
-        //printf("!!![TEST_LUISA]%s\n",method );
-        //printf("!!![TEST_LUISA]:::::: a %d\n",a );
-        //printf("!!![TEST_LUISA]:::::: b %d\n",b );
+        // printf("---------------------------------------------------------------------------------------------------------------------------------------------------\n");
+        // // printf("!!![TEST_LUISA] name -----------> %s\n",T -> name );
+        // printf("!!![TEST_LUISA]:::::: -------------------------------:::::::::::::: LEVEL  %d\n",a+b );
+        // //printf("!!![TEST_LUISA]:::::: b %d\n",b );
+        // // printf("!!![TEST_LUISA]:::::: isseq %d\n",T -> leaf);
+        // // printf("!!![TEST_LUISA]:::::: idist %d\n",T -> node );
+        // // printf("!!![TEST_LUISA]:::::: order %d\n",T -> align );
+        // // printf("---------------------------------------------------------------------------------------------------------------------------------------------------\n");
 
-	      reg_seq_file2msa_file (method,LK->nseq,LK->seqF, LK->msaF, LK->treeF,b);
+
+	      reg_seq_file2msa_file (method,LK->nseq,LK->seqF, LK->msaF, LK->treeF,a+b);
 	      b++;
 	      if ( a==0)
 		output_completion (stderr, b, njobs[0], 100, method);
