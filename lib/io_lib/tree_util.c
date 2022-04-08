@@ -9042,7 +9042,9 @@ char *reg_seq_file2msa_file (char *method,int nseq, char* seqF, char* msaF, char
 
   if (nseq==1)com=csprintf (NULL, "cp %s %s", seqF, msaF);
   else if (use_old_constraint_list)return seq_file2msa_file (method,seqF, msaF);
-  else com=csprintf (NULL, "dynamic.pl -method %s -seq %s -outfile %s -tree %s -level %d", method, seqF, msaF, treeF, level);
+  else{
+    com=csprintf (NULL, "dynamic.pl -method %s -seq %s -outfile %s -tree %s -level %d", method, seqF, msaF, treeF, level);
+  }
 
   printf_system (com);
 

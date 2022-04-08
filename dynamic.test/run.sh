@@ -1,7 +1,7 @@
 # Safe test - should be always working
 #../t_coffee/src/t_coffee -reg -seq ./seqs.fa -nseq 2 -reg_tree ./tree.dnd -method famsa_msa
 export method_4_CLTCOFFEE=TMalign_pair
-export template_file_4_CLTCOFFEE="/home/luisasantus/Desktop/tcoffee/dynamic.test/template.list"
+export template_file_4_CLTCOFFEE="template_list.txt"
 export VERBOSE_4_DYNAMIC=1
 #export DUMP_ALN_BUCKETS=1
 #export DUMP_SEQ_BUCKETS_ONLY=1
