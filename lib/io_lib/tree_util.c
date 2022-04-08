@@ -212,15 +212,15 @@ NT_node  tree2collapsed_tree (NT_node T, int n, char **string)
   Sequence *A;
   int a, *nlist;
 
-  
+
   A=tree2seq(T, NULL);
-  
+
   T=recode_tree(T, A);
-  
-  
+
+
   list=(char***)vcalloc (A->nseq, sizeof (char***));
   nlist=(int*)vcalloc (A->nseq, sizeof (int));
-  
+
   if ( n==0)return T;
   else if (n>1)
     {
@@ -303,18 +303,18 @@ NT_node collapse_tree (NT_node T, Sequence *S, char *string)
 
   for (a=0; a<T->nseq; a++)
     {
-      
+
       p=strstr((S->name[T->lseq[a]]),string);
-	
+
       if (p && strm (p, string));
-      else 
+      else
 	{
 	  collapse_tree (T->left, S, string);
 	  collapse_tree (T->right, S, string);
 	  return T;
 	}
     }
-  
+
   T->isseq=1;
   T->right=T->left=NULL;
   T->nseq=1;
@@ -340,7 +340,7 @@ NT_node prune_tree(NT_node T, Sequence *S)
 int check_treeF_seqF(char *tree, char *seq)
 {
   int ret=0;
-  
+
   Sequence*S=get_fasta_sequence (seq,NULL);
   NT_node T =main_read_tree(tree);
   ret=check_tree_seq(T,S);
@@ -364,9 +364,9 @@ int check_tree_seq(NT_node T, Sequence *S)
       tname[ntseq]=L[ntseq]->name;
       ntseq++;
     }
-  
-  
-  
+
+
+
 
   for (a=0; a<S->nseq; a++)
     if (name_is_in_hlist (S->name[a], tname,ntseq)==-1)
@@ -377,12 +377,12 @@ int check_tree_seq(NT_node T, Sequence *S)
   vfree(L); vfree(tname);
   return 1;
 }
-  
+
 char* prune_treeF (NT_node T, Sequence *S, char *tmp)
 {
   NT_node *L;
   NT_node *R;
- 
+
   int a;
   int **r;
   float *d;
@@ -397,30 +397,30 @@ char* prune_treeF (NT_node T, Sequence *S, char *tmp)
       R[a]->order=a;
       a++;
     }
-  
+
   r=declare_int (arrlen(R), 3);
   d=(float*)vcalloc (sizeof (float), arrlen(R));
-  
+
   //This stores the original Node connectivity that defines the tree topology
   a=0;
   while (R[a])
     {
       if (R[a]->parent)r[a][0]=(R[a]->parent)->order;
       else r[a][0]=-1;
-      
+
       if (R[a]->left  )r[a][1]=(R[a]->left  )->order;
       else r[a][1]=-1;
-      
+
       if (R[a]->right )r[a][2]=(R[a]->right )->order;
       else r[a][2]=-1;
-      
+
       d[a]=R[a]->dist;
       a++;
     }
   //T will now be pruned
-  
+
   L=tree2seqnode_list (T,NULL);
-  
+
   a=0;
   while (!special && L[a])
     {
@@ -428,17 +428,17 @@ char* prune_treeF (NT_node T, Sequence *S, char *tmp)
       C->index=1;
       P=C->parent;
       GP=(P)?P->parent:NULL;
-      
-      
+
+
       if (P->right==C)B=P->left;
       else B=P->right;
-      
+
       if (name_is_in_hlist (C->name,S->name, S->nseq)==-1)
 	{
 	  C->index=0;
 	  if (!GP && B->isseq)
 	    {
-	      
+
 	      B->parent=NULL;
 	      special=1;
 	    }
@@ -460,14 +460,14 @@ char* prune_treeF (NT_node T, Sequence *S, char *tmp)
 	}
       a++;
     }
-  
+
   print_newick_tree ((special)?B:T,tmp);
-  
+
   //restore the original Tree
   a=0;
   while (R[a])
     {
-      
+
       R[a]->dist=d[a];
       R[a]->parent=(r[a][0]==-1)?NULL:R[r[a][0]];
       R[a]->left  =(r[a][1]==-1)?NULL:R[r[a][1]];
@@ -476,11 +476,11 @@ char* prune_treeF (NT_node T, Sequence *S, char *tmp)
     }
   vfree(L); vfree(R);vfree(d);
   free_int (r,-1);
-  
+
   return tmp;
 }
 
-  
+
 
 
 
@@ -646,7 +646,7 @@ int main_compare_splits ( NT_node T1, NT_node T2, char *mode,FILE *fp)
 
   T2=prune_tree (T2, S);
   T2=recode_tree(T2, S);
-  
+
   sl1=declare_int (10*S->nseq, S->nseq+1);
   sl2=declare_int (10*S->nseq, S->nseq+1);
 
@@ -1288,8 +1288,8 @@ Alignment * phylotrim (Alignment *A, NT_node RT, char *Ns,  char *treemode, char
 
   name=(char *)vcalloc ( strlen (A->name[0])+strlen(A->name[A->nseq-1])+100, sizeof (char));
   sprintf (name, "%s%s%d", A->name[0], A->name[A->nseq-1], A->nseq);
-  
-  
+
+
   if (!Ns)N=1;
   else if (strstr (Ns, "split"))
     {
@@ -1300,29 +1300,29 @@ Alignment * phylotrim (Alignment *A, NT_node RT, char *Ns,  char *treemode, char
       sscanf (Ns, "%d%%", &N);
       N=(A->nseq*100)/N;
     }
-  else 
+  else
     {
       N=atoi (Ns);
       N=MIN(N, ((A->nseq)-3));
     }
-  
+
   arglist=(char**)vcalloc (2, sizeof (char*));
   arglist[narglist++]=treemode;
   if (tempfile)arglist[narglist++]=tempfile;
-  
+
   tmptree=vtmpnam (NULL);
   if (!RT)
     {
       RT=main_aln2tree(A,narglist, arglist, name);
       free_rt=1;
     }
-  
+
   if (!RT)
     printf_exit (EXIT_FAILURE, stderr, "ERROR: Could Not Compute the reference tree [FATAL:%s]\n", PROGRAM);
   else
     vfclose (print_tree (RT,"newick", vfopen (tmptree, "w")));
-  
-  
+
+
   if (N>0)
     {
       for (a=0; a<N; a++)
@@ -1337,9 +1337,9 @@ Alignment * phylotrim (Alignment *A, NT_node RT, char *Ns,  char *treemode, char
       int **sl;
       FILE *fp;
       char * alnF=vtmpnam (NULL);
-      
+
       S=tree2seq(RT, NULL);
-      
+
       RT=recode_tree (RT, S);
       fp=vfopen (alnF, "w");
       for (a=0; a< S->nseq; a++)
@@ -1354,7 +1354,7 @@ Alignment * phylotrim (Alignment *A, NT_node RT, char *Ns,  char *treemode, char
       A=main_read_aln (alnF, NULL);
       sl=declare_int (10*S->nseq, S->nseq+1);
       tree2split_list (RT, S->nseq, sl, &ns);
-      
+
       //add the leafs to the split list
       for (a=0; a<A->nseq; a++)
 	{
@@ -1371,16 +1371,16 @@ Alignment * phylotrim (Alignment *A, NT_node RT, char *Ns,  char *treemode, char
 	  phylotrim2 (A, tmptree, sl[a], 0, narglist, arglist, name);
 	  phylotrim2 (A, tmptree, sl[a], 1, narglist, arglist, name);
 	}
-      
+
       free_int (sl, -1);
     }
   if (free_rt)free_tree (RT);
-  
+
   myexit (EXIT_SUCCESS);
 }
 
 
-  
+
 Alignment * phylotrim2 (Alignment *A, char *reftree,int *l, int ph, int narg, char **argl, char *name)
 {
   Alignment *NA=NULL;
@@ -1388,24 +1388,24 @@ Alignment * phylotrim2 (Alignment *A, char *reftree,int *l, int ph, int narg, ch
   Tree_sim *T;
   int a, b, n, rf;
   FILE *fp;
-  
+
   char *tmpaln=vtmpnam (NULL);
-  
-  
+
+
   for (n=0,a=0; a< A->nseq; a++)
     {
       n+=(l[a]==ph)?1:0;
     }
-  
+
   if (n<3) return A;
-  
-  
+
+
   fp=vfopen (tmpaln, "w");
   for (a=0; a<A->nseq;a++){if (l[a]==ph)fprintf (fp, ">%s\n%s\n", A->name[a], A->seq_al[a]);}
   vfclose (fp);
-  
+
   NA=main_read_aln (tmpaln, NULL);
-  if ((NT=main_aln2tree (NA, narg, argl, name)))    
+  if ((NT=main_aln2tree (NA, narg, argl, name)))
     {
       RT=main_read_tree (reftree);
       T=tree_cmp (RT, NT);
@@ -1416,17 +1416,17 @@ Alignment * phylotrim2 (Alignment *A, char *reftree,int *l, int ph, int narg, ch
     {
       rf=-1;
     }
-  
+
   fprintf (stdout, ">split ");
   for (a=0; a<A->nseq; a++){fprintf (stdout, "%d",(ph==1)?l[a]:1-l[a]);}
   fprintf ( stdout, " N: %4d R: %4d RF: %4d\n", n,A->nseq-n, rf);
-  
-  
-  
+
+
+
   free_tree (RT);
   free_tree (NT);
   free_aln (NA);
-  
+
   return A;
 }
 Alignment * phylotrim1 (Alignment *A, char *reftree, int narg, char **argl, char *name)
@@ -1440,7 +1440,7 @@ Alignment * phylotrim1 (Alignment *A, char *reftree, int narg, char **argl, char
   char *alnF=vtmpnam (NULL);
 
   seq=brf=-1;
-  
+
   for (a=0; a< A->nseq; a++)
     {
       fp=vfopen (alnF, "w");
@@ -1449,7 +1449,7 @@ Alignment * phylotrim1 (Alignment *A, char *reftree, int narg, char **argl, char
 	  if ( a!=b)fprintf (fp, ">%s\n%s\n", A->name[b], A->seq_al[b]);
 	}
       vfclose (fp);
-      
+
       NA=main_read_aln (alnF, NULL);
       if (NT=main_aln2tree (NA, narg, argl, name))
 	{
@@ -1471,7 +1471,7 @@ Alignment * phylotrim1 (Alignment *A, char *reftree, int narg, char **argl, char
 	}
     }
   fprintf ( stdout, ">%s RF: %d\n", A->name[seq], brf);
-  
+
   fp=vfopen (alnF, "w");
   for (b=0; b<A->nseq; b++)
      {
@@ -1748,8 +1748,8 @@ NT_node main_aln2tree (Alignment *A, int n, char **arglist, char *name)
   NT_node T;
   char *CacheAln;
   char *CacheTree;
-  
-  
+
+
 
   if (!name || strm (name, "nocache"))
     {
@@ -1760,18 +1760,18 @@ NT_node main_aln2tree (Alignment *A, int n, char **arglist, char *name)
     {
       char *tmpA=vtmpnam(NULL);
       long int HV;
-      
+
       output_fasta_aln (tmpA,A);
       HV=hash_file (tmpA);
-      
-      
+
+
       CacheAln=(char* )vcalloc (strlen (get_cache_dir ())+100+strlen (arglist[0])+100, sizeof (char));
       CacheTree=(char*)vcalloc (strlen (get_cache_dir ())+100+strlen (arglist[0])+100, sizeof (char));
       sprintf (CacheAln, "%s/%ld.%s.aln", get_cache_dir(),HV, arglist[0]);
       sprintf (CacheTree,"%s/%ld.%s.nwk", get_cache_dir(),HV, arglist[0]);
-      
+
       //HERE ("\nALN: %s (%d)\nTree %s(%d)\nDiff: %d", CacheAln, file_exists (NULL,CacheAln),CacheTree,file_exists (NULL,CacheTree),file2diff (CacheAln, tmpA));
-      
+
       if (!file_exists (NULL,CacheAln) || !file_exists (NULL,CacheTree)|| file2diff (CacheAln, tmpA))
 	{
 	  //HERE ("Compute");
@@ -1798,14 +1798,14 @@ NT_node tree_compute ( Alignment *A, int n, char ** arg_list)
       return compute_cw_tree (A);
     }
   else if (strm (arg_list[0], "phyml"))
-    return aln2phyml_tree (A); 
+    return aln2phyml_tree (A);
   else if ( strm (arg_list[0], "fj"))
     {
       return compute_fj_tree ( NULL, A, (n>=1)?atoi(arg_list[1]):8, (n>=2)?arg_list[2]:NULL);
     }
-  
+
   else if (strm (arg_list[0], "kmeans"))return aln2km_tree (A, NULL, 1);
-  else if (strm (arg_list[0], "trmsd"))return aln2trmsd_tree (A,arg_list[1]); 
+  else if (strm (arg_list[0], "trmsd"))return aln2trmsd_tree (A,arg_list[1]);
   else if ( ( strm (arg_list[0], "nj")))
     {
       return compute_std_tree (A, n, arg_list);
@@ -1815,7 +1815,7 @@ NT_node tree_compute ( Alignment *A, int n, char ** arg_list)
       return compute_std_tree_2(A,NULL, "_TMODE_upgma");
     }
   else
-    
+
     return compute_std_tree (A, n, arg_list);
 }
 
@@ -1899,7 +1899,7 @@ NT_node compute_std_tree_2 (Alignment *A, int **s, char *cl)
     }
 
   //Compute the tree
-  
+
   if (strm (tmode, "nj"))
     {
 
@@ -1909,7 +1909,7 @@ NT_node compute_std_tree_2 (Alignment *A, int **s, char *cl)
     }
   else if (strm (tmode, "upgma"))
     {
-     
+
       BT=int_dist2upgma_tree (s,A, A->nseq, tree_name);
       T=main_read_tree (tree_name);
       free_read_tree(BT);
@@ -1958,17 +1958,17 @@ NT_node aln2trmsd_tree (Alignment *A, char *temp)
 
   A->residue_case=KEEP_CASE;
   output_fasta_aln (fname, A);
-  
-    
+
+
   printf_system ("t_coffee -other_pg trmsd -aln %s -template_file %s -outfile %s -quiet %s", fname, temp, tree,  TO_NULL_DEVICE);
   //printf_system ("t_coffee -other_pg trmsd -aln %s -template_file %s -outfile %s ", fname, temp, tree);
   if ( check_file_exists (tree))
     T=main_read_tree (tree);
   if (!T) exit (0);
-  
+
   return T;
 }
- 
+
 NT_node aln2phyml_tree (Alignment *A)
 {
   char *type;
@@ -1979,7 +1979,7 @@ NT_node aln2phyml_tree (Alignment *A)
   A=get_aln_type (A);
   type=(A->S)->type;
   output_phylip_aln (tmpaln, A, "w");
-  
+
   /*
   if ( strstr (type, "DNA") || strstr (type, "RNA"))
     {
@@ -1988,7 +1988,7 @@ NT_node aln2phyml_tree (Alignment *A)
   else
     printf_system ("phyml -i %s -d aa ", tmpaln);
   */
-  
+
 
 
   if ( strstr (type, "DNA") || strstr (type, "RNA"))
@@ -2000,17 +2000,17 @@ NT_node aln2phyml_tree (Alignment *A)
       printf_system ( "phyml -i %s -o tlr --rand_start --n_rand_starts 5 -d aa -b -1 -s BEST --quiet %s", tmpaln, TO_NULL_DEVICE);
       //printf_system ("phyml -i %s -d aa --quiet  %s", tmpaln,TO_NULL_DEVICE);
     }
-    
+
   name=(char *)vcalloc ( strlen (tmpaln)+100, sizeof (char));
-  
+
   sprintf (name,"%s_phyml_stats.txt",tmpaln);
   if ( check_file_exists (name))delete_file (name);
   else printf_exit ( EXIT_FAILURE,stderr, "ERROR: Failed to compute a PhyMl tree [FATAL:%s]\n", PROGRAM);
-  
+
   sprintf (name,"%s_phyml_tree.txt",tmpaln);
   if ( !check_file_exists (name))
     printf_exit ( EXIT_FAILURE,stderr, "ERROR: Failed to compute a PhyMl tree [FATAL:%s]\n", PROGRAM);
-  
+
   RT=main_read_tree (name);
   delete_file (name);
   vfree (name);
@@ -2147,33 +2147,33 @@ void reset_node_count (NT_node root)
 {
   //MorrisTraversal: No Recursion, No stack
   NT_node current,pre;
-  
+
   if( root== NULL)
-    return; 
- 
+    return;
+
   current = root;
   root->visited=0;
-  
+
   while(current)
-    {                 
+    {
       if(!current->left)
 	{
 	  if (current)current->visited=0;
-	  current = current->right;   
+	  current = current->right;
 	  if ( current) current->visited=0;
-	}    
+	}
       else
 	{
 	  pre = current->left;
 	  if (pre)pre->visited=0;
-	  
+
 	  while(pre->right && pre->right != current)
 	    {
 	      pre = pre->right;
 	      if (pre)pre->visited=0;
 	    }
-	  
-	  
+
+
 	  if(!pre->right )
 	    {
 	      pre->right = current;
@@ -2181,15 +2181,15 @@ void reset_node_count (NT_node root)
 	      current = current->left;
 	      if (current) current->visited=0;
 	    }
-	  
-	  else 
+
+	  else
 	    {
 	      pre->right = NULL;
-	      current = current->right;     
+	      current = current->right;
 	      if (current) current->visited=0;
-	    } 
-	} 
-    } 
+	    }
+	}
+    }
 }
 
 
@@ -2281,17 +2281,17 @@ NT_node* free_treelist (NT_node *L)
 NT_node free_tree ( NT_node root)
 {
   NT_node stack, current, pre;
-  
+
   if (!root)return NULL;
   reset_node_count (root);
-  
+
   stack=root;
   stack->bot=NULL;
   current = root;
   root->visited=1;
-  
+
   while(current)
-    {                 
+    {
       if(!current->left)
 	{
 	  if (current)
@@ -2299,13 +2299,13 @@ NT_node free_tree ( NT_node root)
 	      if (!current->visited){ current->bot=stack;stack=current;}
 	      current->visited=1;
 	    }
-	  current = current->right;   
-	  if ( current) 
+	  current = current->right;
+	  if ( current)
 	    {
 	      if (!current->visited){current->bot=stack;stack=current;}
 	      current->visited=1;
 	    }
-	}    
+	}
       else
 	{
 	  pre = current->left;
@@ -2314,7 +2314,7 @@ NT_node free_tree ( NT_node root)
 	      if (!pre->visited){pre->bot=stack;stack=pre;}
 	      pre->visited=1;
 	    }
-	  
+
 	  while(pre->right && pre->right != current)
 	    {
 	      pre = pre->right;
@@ -2324,8 +2324,8 @@ NT_node free_tree ( NT_node root)
 		   pre->visited=1;
 		 }
 	    }
-	  
-	  
+
+
 	  if(!pre->right )
 	    {
 	      pre->right = current;
@@ -2341,19 +2341,19 @@ NT_node free_tree ( NT_node root)
 		  current->visited=1;
 		}
 	    }
-	  
-	  else 
+
+	  else
 	    {
 	      pre->right = NULL;
-	      current = current->right;     
-	      if (current) 
+	      current = current->right;
+	      if (current)
 		{
 		  if (!current->visited){current->bot=stack;stack=current;}
 		  current->visited=1;
 		}
-	    } 
-	} 
-    } 
+	    }
+	}
+    }
   while ( stack)
     {
       NT_node tofree=stack;
@@ -2362,7 +2362,7 @@ NT_node free_tree ( NT_node root)
       free_tree_node (tofree);
     }
 }
-  
+
 
 NT_node rec_free_tree ( NT_node R)
 {
@@ -2450,7 +2450,7 @@ char * node2seq_file (NT_node N, Sequence *S, int cache, char *file)
 }
 Sequence * tree2seq (NT_node p, Sequence *S)
 {
-  
+
   if ( !S)
     {
       S=declare_sequence (10, 10, tree2nseq(p));
@@ -2475,7 +2475,7 @@ Sequence * tree2seq (NT_node p, Sequence *S)
 	      p=p->parent;
 	    }
 	}
-      
+
       if (x>=3 || p->isseq)
 	{
 	  if (p)
@@ -2500,9 +2500,9 @@ int seqindex2seqname4tree (NT_node root, Sequence *S)
   reset_node_count (root);
   current = root;
   root->visited=1;
-  
+
   while(current != NULL)
-    {                 
+    {
       if(!current->left)
 	{
 	  if (current && current->isseq && !current->visited)
@@ -2511,14 +2511,14 @@ int seqindex2seqname4tree (NT_node root, Sequence *S)
 	      if (i<S->nseq)current->name=csprintf (current->name, "%s", S->name[i]);
 	      else printf_exit ( EXIT_FAILURE,stderr, "\nERROR: Sequence %s is in tree but not in source sequence file [FATAL]", current->name);
 	      rv++;
-	    } 
+	    }
 	  current->visited=1;
-	  current = current->right;  
-	}    
+	  current = current->right;
+	}
       else
 	{
 	  pre = current->left;
-	  
+
 	  if (!pre->visited)
 	    {
 	      if (pre && !pre->visited && pre->isseq)
@@ -2545,21 +2545,21 @@ int seqindex2seqname4tree (NT_node root, Sequence *S)
 		  pre->visited=1;
 		}
 	    }
-	  
-	  
+
+
 	  if(!pre->right )
 	    {
 	      pre->right = current;
 	      current = current->left;
 	    }
-	  
-	  else 
+
+	  else
 	    {
 	      pre->right = NULL;
-	      current = current->right;      
-	    } 
-	} 
-    } 
+	      current = current->right;
+	    }
+	}
+    }
   return rv;
 }
 int seqname2seqindex4tree (NT_node root, Sequence *S)
@@ -2571,9 +2571,9 @@ int seqname2seqindex4tree (NT_node root, Sequence *S)
   reset_node_count (root);
   current = root;
   root->visited=1;
-  
+
   while(current != NULL)
-    {                 
+    {
       if(!current->left)
 	{
 	  if (current && current->isseq && !current->visited)
@@ -2582,14 +2582,14 @@ int seqname2seqindex4tree (NT_node root, Sequence *S)
 	      if (i!=-1)current->name=csprintf (current->name, "%d", i+1);
 	      else printf_exit ( EXIT_FAILURE,stderr, "\nERROR: Sequence %s is in tree but not in source sequence file [FATAL]", current->name);
 	      rv++;
-	    } 
+	    }
 	  current->visited=1;
-	  current = current->right;  
-	}    
+	  current = current->right;
+	}
       else
 	{
 	  pre = current->left;
-	  
+
 	  if (!pre->visited)
 	    {
 	      if (pre && !pre->visited && pre->isseq)
@@ -2611,27 +2611,27 @@ int seqname2seqindex4tree (NT_node root, Sequence *S)
 		       int i=name_is_in_hlist (pre->name, S->name, S->nseq);
 		       if (i!=-1)pre->name=csprintf (pre->name, "%d", i+1);
 		       else printf_exit ( EXIT_FAILURE,stderr, "\nERROR: Sequence %s is in tree but not in source sequence file [FATAL]", pre->name);
-		       
+
 		       rv++;
 		    }
 		  pre->visited=1;
 		}
 	    }
-	  
-	  
+
+
 	  if(!pre->right )
 	    {
 	      pre->right = current;
 	      current = current->left;
 	    }
-	  
-	  else 
+
+	  else
 	    {
 	      pre->right = NULL;
-	      current = current->right;      
-	    } 
-	} 
-    } 
+	      current = current->right;
+	    }
+	}
+    }
   return rv;
 }
 
@@ -2644,9 +2644,9 @@ int seqname2seqindexname4tree (NT_node root, Sequence *S)
   reset_node_count (root);
   current = root;
   root->visited=1;
-  
+
   while(current != NULL)
-    {                 
+    {
       if(!current->left)
 	{
 	  if (current && current->isseq && !current->visited)
@@ -2655,14 +2655,14 @@ int seqname2seqindexname4tree (NT_node root, Sequence *S)
 	      if (i!=-1)current->name=csprintf (current->name, "%d_%s", i+1, current->name);
 	      else printf_exit ( EXIT_FAILURE,stderr, "\nERROR: Sequence %s is in tree but not in source sequence file [FATAL]", current->name);
 	      rv++;
-	    } 
+	    }
 	  current->visited=1;
-	  current = current->right;  
-	}    
+	  current = current->right;
+	}
       else
 	{
 	  pre = current->left;
-	  
+
 	  if (!pre->visited)
 	    {
 	      if (pre && !pre->visited && pre->isseq)
@@ -2684,27 +2684,27 @@ int seqname2seqindexname4tree (NT_node root, Sequence *S)
 		       int i=name_is_in_hlist (pre->name, S->name, S->nseq);
 		       if (i!=-1)pre->name=csprintf (pre->name, "%d_%s", i+1, pre->name);
 		       else printf_exit ( EXIT_FAILURE,stderr, "\nERROR: Sequence %s is in tree but not in source sequence file [FATAL]", pre->name);
-		       
+
 		       rv++;
 		    }
 		  pre->visited=1;
 		}
 	    }
-	  
-	  
+
+
 	  if(!pre->right )
 	    {
 	      pre->right = current;
 	      current = current->left;
 	    }
-	  
-	  else 
+
+	  else
 	    {
 	      pre->right = NULL;
-	      current = current->right;      
-	    } 
-	} 
-    } 
+	      current = current->right;
+	    }
+	}
+    }
   return rv;
 }
 
@@ -2815,7 +2815,7 @@ int tree2nnode (NT_node p)
 	      p=p->parent;
 	    }
 	}
-      
+
       if (x>=3 || p->isseq)
 	{
 	  if (p&& p->isseq && !p->visited){n++;}
@@ -2832,30 +2832,30 @@ int tree2nleaf (NT_node root)
   //MorrisTraversal: No Recursion, No stack
   NT_node current,pre;
   int nleaf=0;
-  
+
   reset_node_count (root);
-  
+
   if( root== NULL)
-    return nleaf; 
- 
+    return nleaf;
+
   current = root;
   root->visited=1;
-  
+
   while(current)
-    {                 
+    {
       if(!current->left)
 	{
 	  if (!current->visited && current->isseq)nleaf++;
 	  current->visited=1;
-	  current = current->right;      
-	}    
+	  current = current->right;
+	}
       else
 	{
 	  pre = current->left;
-	  
+
 	  if (!pre->visited && pre->isseq)nleaf++;
 	  pre->visited=1;
-	  
+
 	  while(pre->right && pre->right != current)
 	    {
 	      pre = pre->right;
@@ -2865,21 +2865,21 @@ int tree2nleaf (NT_node root)
 		  pre->visited=1;
 		}
 	    }
-	  
-	  
+
+
 	  if(!pre->right )
 	    {
 	      pre->right = current;
 	      current = current->left;
 	    }
-	  
-	  else 
+
+	  else
 	    {
 	      pre->right = NULL;
-	      current = current->right;      
-	    } 
-	} 
-    } 
+	      current = current->right;
+	    }
+	}
+    }
   return nleaf;
 }
 
@@ -2915,7 +2915,7 @@ NT_node tree2deepest_nodeR(NT_node T, NT_node *DN, int *depth)
   if (!T)return NULL;
   int a;
   int n1, n2, n;
-  
+
   n1=n2=n=0;
   for (a=0; a<T->nseq; a++)
     {
@@ -3234,7 +3234,7 @@ FILE * print_tree_list ( NT_node *T, char *format,FILE *fp)
 }
 FILE * print_tree ( NT_node T, char *format,FILE *fp)
 {
-  
+
   tree2file (T,NULL, format, fp);
   return fp;
 }
@@ -3255,7 +3255,7 @@ char * tree2string (NT_node T)
 
 FILE * tree2file ( NT_node T, Sequence *S,char *format,FILE *fp)
 {
-  
+
 
 
   /*
@@ -3268,7 +3268,7 @@ FILE * tree2file ( NT_node T, Sequence *S,char *format,FILE *fp)
   else
     recode_tree (T, S);
   */
-  
+
   if ( format && strm (format, "binary"))
     fp=display_tree ( T,S->nseq, fp);
   else if ( strm (format, "shuffle_newick"))
@@ -3301,15 +3301,15 @@ FILE * tree2file ( NT_node T, Sequence *S,char *format,FILE *fp)
 char * print_newick_tree ( NT_node T, char *name)
 {
   FILE *fp;
-  
-  
+
+
   fp=vfopen (name, "w");
 
-  
+
   fp=no_rec_print_tree (T, fp);
 
 
-  
+
   fprintf (fp, ";\n");
   vfclose (fp);
   return name;
@@ -3320,7 +3320,7 @@ NT_node tree2shuffle (NT_node p)
   NT_node *L;
   int a=0;
   L=tree2node_list (p,NULL);
-  
+
   while (L[a])
     {
       int order=rand()%2;
@@ -3348,16 +3348,16 @@ int newick2random4dpa (Sequence *S, NT_node p,int n, int ntrees)
   Sequence *S2;
   Alignment *A2;
   char * tmp=vtmpnam (NULL);
- 
+
 
   int nt;
- 
+
   L=tree2seqnode_list (p,NULL);
   nseq=0;
   while (L[nseq])nseq++;
   names=(char**)vcalloc (nseq, sizeof (char*));
   sorted=declare_int (nseq, 2);
-  
+
   w=seq2dpa_weight (S, "longuest");
   for (nt=0; nt<ntrees; nt++)
     {
@@ -3368,7 +3368,7 @@ int newick2random4dpa (Sequence *S, NT_node p,int n, int ntrees)
 	  sorted[a][1]=rand()%nseq+1;
 	}
       sort_int (sorted,2,1, 0,nseq-1);
-      
+
       for (a=0; a<nseq; a++)
 	{
 	  L[a]->name=names[sorted[a][0]];
@@ -3393,13 +3393,13 @@ FILE * no_rec_print_tree_randomize ( NT_node p, FILE *fp)
   int a, nseq;
   char **names;
   int **sorted;
-  
+
   L=tree2seqnode_list (p,NULL);
   nseq=0;
   while (L[nseq])nseq++;
   names=(char**)vcalloc (nseq, sizeof (char*));
   sorted=declare_int (nseq, 2);
-  
+
   for (a=0; a<nseq; a++)
     {
       names[a]=L[a]->name;
@@ -3407,7 +3407,7 @@ FILE * no_rec_print_tree_randomize ( NT_node p, FILE *fp)
       sorted[a][1]=rand()%nseq+1;
     }
   sort_int (sorted,2,1, 0,nseq-1);
-  
+
   for (a=0; a<nseq; a++)
     {
       L[a]->name=names[sorted[a][0]];
@@ -3417,7 +3417,7 @@ FILE * no_rec_print_tree_randomize ( NT_node p, FILE *fp)
   vfree (L);
   return no_rec_print_tree (p,fp);
 }
-      
+
 FILE * no_rec_print_tree_shuffle ( NT_node p, FILE *fp)
 {
   p=tree2shuffle (p);
@@ -3429,7 +3429,7 @@ FILE * no_rec_print_tree ( NT_node p, FILE *fp)
   int ns=tree2nleaf(p);
   if ( ns==1)
     {
-      
+
       if (p->name)fprintf (fp, "(%s:1.000)", p->name);
       else if ( p->right)fprintf (fp, "(%s:1.000)", (p->right)->name);
       else if ( p->left)fprintf (fp, "(%s:1.000)", (p->left)->name);
@@ -3437,11 +3437,11 @@ FILE * no_rec_print_tree ( NT_node p, FILE *fp)
     }
 
   reset_node_count (p);
-  
+
   while (p)
     {
       int x=++(p->visited);
-      
+
       if (!p->isseq)
 	{
 	  if (x==1)
@@ -3464,13 +3464,13 @@ FILE * no_rec_print_tree ( NT_node p, FILE *fp)
 	      fprintf ( fp, ")");
 	    }
 	}
-      
+
       if (x>=3 || p->isseq)
 	{
 	  if (p)
 	    {
 	      if (p->isseq)fprintf ( fp, "%s:%.5f",p->name,p->dist);
-	      else 
+	      else
 		{
 		  if ( p->bootstrap!=0)fprintf (fp, "%d", (int)p->bootstrap);
 		  fprintf ( fp, ":%.5f",p->dist);
@@ -3492,11 +3492,11 @@ void reset_tree_distances( NT_node p, float d)
     }
 
   reset_node_count (p);
-  
+
   while (p)
     {
       int x=++(p->visited);
-      
+
       if (!p->isseq)
 	{
 	  p->dist=1;
@@ -3521,7 +3521,7 @@ void reset_tree_distances( NT_node p, float d)
 	{
 	  if (p)p->dist=d;
 	  if (x>3)p=NULL;
-	  else if (p) 
+	  else if (p)
 	    {
 	      p=p->parent;
 	      p->dist=1;
@@ -4489,7 +4489,7 @@ int find_seq_chain (Alignment *A, int **sim,int *used,int seq0,int seq1, int seq
 /*                                                                   */
 /*********************************************************************/
 int scan_name_and_dist ( FILE *fp, char *name, float *dist);
- 
+
 
 Sequence *get_nexus (char*file)
 {
@@ -4499,11 +4499,11 @@ Sequence *get_nexus (char*file)
   FILE *fpout;
   int i, max_i=0, nt=0;
   char **lu=NULL;
-  
-  
+
+
   fpin =vfopen (file, "r");
   fpout=vfopen (fasta, "w");
-  
+
   while ((buf=vfgets (buf,fpin)))
     {
       if (strstr (buf, "Translate"))
@@ -4523,14 +4523,14 @@ Sequence *get_nexus (char*file)
 	      lu[i]=buf2;
 	      if (i>n)n=i;
 	    }
-	  
+
 	  while((buf=vfgets (buf, fpin)) && !strstr(buf, "tree"));
 	  if (buf)
 	    {
 	      char *tree=(char*)vcalloc ( strlen (buf)+1, sizeof (char));
 	      char index[5];
 	      sscanf (buf, "tree PAUP_1 = [&U] %s", tree);
-	      
+
 	      for (i=n; i>0; i--)
 		{
 		  if (lu[i])
@@ -4557,8 +4557,8 @@ Sequence * get_treelist (char *fname)
   int n=0;
   char *buf=NULL;
   char *seq=vtmpnam (NULL);
-  
-  
+
+
   fpin=vfopen (fname, "r");
   fpout=vfopen(seq, "w");
   while ((buf=vfgets(buf, fpin)))
@@ -4574,8 +4574,8 @@ Sequence * get_treelist (char *fname)
     }
   vfclose (fpin);
   vfclose (fpout);
-  
-  
+
+
   return get_fasta_tree(seq, NULL);
 }
 Sequence*get_fasta_tree (char *fname, char *comment_out)
@@ -4629,7 +4629,7 @@ Sequence*get_fasta_tree (char *fname, char *comment_out)
 		}
 
     vfclose (fp);
-    
+
     LS=declare_sequence (  min_len_seq,  max_len_seq,nseq);
 
     LS->nseq=nseq;
@@ -4685,7 +4685,7 @@ void output_fasta_tree (char *fname, Alignment*A)
 	if ( !A || !A->nseq) return;
 
 	if (A->Tree)return  output_fasta_tree (fname, A->Tree);
-	
+
 	fp=vfopen ( fname, "w");
 	for ( a=0; a< A->nseq; a++)
 	  {
@@ -4701,7 +4701,7 @@ int output_treelist (char *fname, Alignment*A)
 	if ( !A || !A->nseq) return 0;
 
 	if (A->Tree)return  output_treelist (fname, A->Tree);
-	
+
 	fp=vfopen ( fname, "w");
 	for ( a=0; a< A->nseq; a++)
 	  {
@@ -4709,9 +4709,9 @@ int output_treelist (char *fname, Alignment*A)
 	    fprintf ( fp, "%s\n",A->seq_al[a]);
 	  }
 	vfclose (fp);
-	return A->nseq; 
-	}  
-  
+	return A->nseq;
+	}
+
 
 
 NT_node check_tree (NT_node T);
@@ -4795,7 +4795,7 @@ NT_node recode_tree (NT_node T, Sequence *S)
 
   if ( T->isseq)
     {
-      
+
       int i;
       i=name_is_in_list (T->name, S->name, S->nseq, -1);
 
@@ -4815,7 +4815,7 @@ NT_node recode_tree (NT_node T, Sequence *S)
   else
       {
       NT_node R,L;
-    
+
 
       R=recode_tree (T->left, S);
 
@@ -4851,7 +4851,7 @@ NT_node recode_tree (NT_node T, Sequence *S)
 
 	     }
     }
- 
+
   return T;
 }
 float *seq2dpa_weight (Sequence *S, char *mode)
@@ -4860,13 +4860,13 @@ float *seq2dpa_weight (Sequence *S, char *mode)
   int a, b;
   if (!S) return NULL;
   w=(float*)vcalloc (S->nseq, sizeof (float));
-  
+
   if (!mode || strm (mode, "longuest"))
     {
       for (a=0; a<S->nseq; a++)
 	w[a]=strlen (S->seq[a]);
     }
-  
+
   else if (strm (mode, "shortest"))
     {
       for (a=0; a<S->nseq; a++)
@@ -4906,26 +4906,26 @@ float *seq2dpa_weight (Sequence *S, char *mode)
       int mdim=26*26*26;
       int nk=S->nseq/100;
       int *size;
-      
-      
+
+
       double **v=declare_double (S->nseq+1,mdim+4);
-      
+
       size=(int*)vcalloc (nk+1, sizeof (char));
       for (a=0; a<S->nseq; a++)
 	{
 	  v[a]=seq2triaa(S->seq[a], v[a]);
 	}
-      
+
       v=vector2strip_vector (v, S->nseq, &mdim,0.80);
-      
+
       km_kmeans (v, S->nseq, mdim,100,0.0001, NULL);
-      
+
       for (a=0; a<S->nseq; a++)
 	{
 	  int c=(int)v[a][mdim+1];
 	  size[c]++;
 	}
-      
+
       for (a=0; a<S->nseq; a++)
 	{
 	  int c=(int)v[a][mdim+1];
@@ -4943,7 +4943,7 @@ float *seq2dpa_weight (Sequence *S, char *mode)
       int mdim;
       double **v;
       float *aw;
-      
+
       invert=(strm (mode, "iswl"))?-1:1;
       mdim=get_int_variable ("swlN");
       if (!mdim)mdim=100;
@@ -4953,11 +4953,11 @@ float *seq2dpa_weight (Sequence *S, char *mode)
       step=(S->nseq/mdim>0)?S->nseq/mdim:1;
       v=(double **)vcalloc (S->nseq+1, sizeof (double**));
       v[S->nseq]=(double*)vcalloc (mdim, sizeof (double));
-      
+
       order=declare_int (S->nseq, 2);
       for (a=0; a<S->nseq; a++){order[a][0]=a; order[a][1]=strlen (S->seq[a]);}
       sort_int_inv (order, 2, 1, 0, S->nseq-1);
-      
+
 
       for (n=0,a=0; a<S->nseq && n<mdim; a+=step, n++)
 	{
@@ -4975,7 +4975,7 @@ float *seq2dpa_weight (Sequence *S, char *mode)
 	}
       for (a=0; a<S->nseq; a++)
 	{
-	  
+
 	  aw[a]/=(float)mdim;
 	  HERE ("%s %.2f", S->name[a], aw[a]);
 	}
@@ -4991,17 +4991,17 @@ float *seq2dpa_weight (Sequence *S, char *mode)
 	    {
 	      v[S->nseq][b]/=(double)S->nseq;
 	    }
-	  
+
 	  for (a=0; a<S->nseq; a++)
 	    {
-	      
+
 	      double d=0;
 	      for (b=0; b<mdim; b++)
 		{
 		  d+=(v[a][b]-v[S->nseq][b])*(v[a][b]-v[S->nseq][b]);
 		}
 	      w[a]=(float)invert*(float)sqrt(d);
-	      
+
 	    }
 	}
       free_double (v, -1);
@@ -5013,41 +5013,41 @@ float *seq2dpa_weight (Sequence *S, char *mode)
       int mdim=26*26;
       double **v;
       int invert;
-      
+
       if (mode[0]=='i'){mode++;invert=1;}
       else invert=-1;
-      
+
       if (strm (mode, "triaa"))mdim*=26;
-      
+
       v=declare_double (S->nseq+1,mdim+4);
       for (a=0; a<S->nseq; a++)
 	{
 	  if ( strm (mode, "diaa"))v[a]=seq2diaa(S->seq[a], v[a]);
 	  else v[a]=seq2triaa(S->seq[a], v[a]);
-	  
+
 	  for (b=0; b<mdim;b++)v[S->nseq][b]+=v[a][b];
 	}
-      
+
       for (b=0; b<mdim; b++)
 	{
 	  v[S->nseq][b]/=(double)S->nseq;
 	}
-      
+
       for (a=0; a<S->nseq; a++)
 	{
-	  
+
 	  double d=0;
 	  for (b=0; b<mdim; b++)
 	    {
-	      
+
 	      d+=(v[a][b]-v[S->nseq][b])*(v[a][b]-v[S->nseq][b]);
 	    }
 	  w[a]=(float)invert*(float)sqrt(d);
-	  
+
 	}
       free_double (v, -1);
     }
-  else 
+  else
     {
       myexit (fprintf_error ( stderr, "\nERROR: unknown weight mode : %s [FATAL:%s]", mode, PROGRAM));
     }
@@ -5064,13 +5064,13 @@ NT_node indextree2nametree (Sequence*S, NT_node root)
       S=declare_sequence (10, 10, tree2nseq (root));
       S->nseq=0;
     }
-  
+
   reset_node_count (root);
   current = root;
   root->visited=1;
-  
+
   while(current != NULL)
-    {                 
+    {
       if(!current->left)
 	{
 	  if (current && current->isseq && !current->visited)
@@ -5081,15 +5081,15 @@ NT_node indextree2nametree (Sequence*S, NT_node root)
 	      current->name=(char*)vcalloc ( strlen (S->name[i])+1, sizeof (char));
 	      sprintf (current->name, "%s", S->name[i]);
 	      current->isseq=current->nseq=1;
-	   } 
+	   }
 	  current->visited=1;
-	  current = current->right;  
-	  
-	}    
+	  current = current->right;
+
+	}
       else
 	{
 	  pre = current->left;
-	  
+
 	  if (!pre->visited)
 	    {
 	      if (pre && !pre->visited && pre->isseq)
@@ -5116,26 +5116,26 @@ NT_node indextree2nametree (Sequence*S, NT_node root)
 		      pre->name=(char*)vcalloc ( strlen (S->name[i])+1, sizeof (char));
 		      sprintf (pre->name, "%s", S->name[i]);
 		      pre->isseq=pre->nseq=1;
-		      
+
 		    }
 		  pre->visited=1;
 		}
 	    }
-	  
-	  
+
+
 	  if(!pre->right )
 	    {
 	      pre->right = current;
 	      current = current->left;
 	    }
-	  
-	  else 
+
+	  else
 	    {
 	      pre->right = NULL;
-	      current = current->right;      
-	    } 
-	} 
-    } 
+	      current = current->right;
+	    }
+	}
+    }
   return root;
 }
 
@@ -5147,25 +5147,25 @@ NT_node node2master(NT_node T, Sequence *S, float *w)
     {
       //int i=name_is_in_list (T->name, S->name, S->nseq, MAXNAMES);
       int i=name_is_in_hlist (T->name, S->name, S->nseq);
-      
+
       if (i==-1)HERE ("Could Not Find %s in Tree", T->name);
-            
+
       T->seq=i;
       T->score=w[i];
       T->isseq=1;
       T->nseq=1;
-      
+
     }
   else if (!T->left || !T->right)
     {
       HERE ("incorrectly parsed tree Root: %d", T->parent?1:0);
       exit (0);
     }
-  else 
+  else
     {
       NT_node L=node2master(T->left,S,w);
       NT_node R=node2master(T->right,S,w);
-      
+
       T->isseq=0;
       T->leaf=T->nseq=L->nseq+R->nseq;
       if      (R->seq==-1 && L->seq==-1)T->seq=-1;
@@ -5174,12 +5174,12 @@ NT_node node2master(NT_node T, Sequence *S, float *w)
 	{
 	  int pl=(seq2P_template_file(S, L->seq))?1:0;
 	  int pr=(seq2P_template_file(S, L->seq))?1:0;
-	  
+
 	  int ll=strlen (S->seq[L->seq]);
 	  int lr=strlen (S->seq[R->seq]);
 	  float wl=w[L->seq];
 	  float wr=w[R->seq];
-	  
+
 	  if ((!pl &&!pr) || (pl && pr))
 	    {
 	      if (abs((wr-wl))<0.0001)
@@ -5188,15 +5188,15 @@ NT_node node2master(NT_node T, Sequence *S, float *w)
 		}
 	      else if (wl>wr)R=L;
 	    }
-	  else if (pl) 
+	  else if (pl)
 	    R=L;
 	}
       T->score=R->score;
       T->seq=R->seq;
-      
+
       sprintf (T->name,"%s",R->name);
     }
-  
+
   return T;
 }
 
@@ -5206,7 +5206,7 @@ NT_node * sort_nodelist4dpa (NT_node *L, int n)
   int a;
   float **lu=declare_float ( n, 2);
   NT_node *NL=(NT_node*)vcalloc (n, sizeof (NT_node));
-  
+
   for (a=0; a<n; a++)
     {
       lu[a][0]=a;
@@ -5225,7 +5225,7 @@ NT_node * sort_nodelist4dpa (NT_node *L, int n)
 
 
 
-  
+
 int tree2clusters   (NT_node T, int *nc,int **cl, double **dist, double Thr, int min)
 {
   if (!T) return nc[0];
@@ -5234,8 +5234,8 @@ int tree2clusters   (NT_node T, int *nc,int **cl, double **dist, double Thr, int
   double n=0;
 
 
-  
-  
+
+
   for (a=0; a<T->nseq-1; a++)
     {
       for (b=a+1; b<T->nseq; b++)
@@ -5247,14 +5247,14 @@ int tree2clusters   (NT_node T, int *nc,int **cl, double **dist, double Thr, int
 	  n++;
 	}
     }
-  
+
   if (n>0.00001)td/=n;
 
   //fprintf (stdout, "\nTest Cluster => %f\n", td);
   //for (a=0; a<T->nseq; a++)
   //  fprintf ( stdout, "%d ", T->lseq[a]);
 
-  
+
   if (td<Thr && T->nseq>=min)
     {
       for (a=0; a<T->nseq; a++)
@@ -5269,7 +5269,7 @@ int tree2clusters   (NT_node T, int *nc,int **cl, double **dist, double Thr, int
     }
   return nc[0];
 }
-  
+
 int tree2split_list (NT_node T, int ns,int **sl, int* n)
 {
   if (!T) return 0;
@@ -5318,17 +5318,17 @@ NT_node display_splits (NT_node T,Sequence *S, FILE *fp, char *name, char *file,
   if (!T->right);
   else if (!T->left);
   else if (!T->parent );
-  
+
   //else if (T->parent && !(T->parent)->parent);
   //Removed because it prevents some splits to be reported replaced with !T-Parent test.
   else
     {
       int n;
-      
+
       for (n=0,a=0; a< S->nseq; a++)
 	       n+=T->lseq2[a];
       n=MIN(n,(S->nseq-n));
-      
+
       if ( n>1)
   	   {
 	     for (a=0; a< S->nseq; a++)
@@ -5442,20 +5442,20 @@ NT_node new_reroot_tree( NT_node T)
 NT_node file2tree (char *fname)
 {
   FILE *fp, *fp1, *fp2;
-  
+
   NT_node R,T,N;
-  int c, lastc; 
+  int c, lastc;
   char *tmp=vtmpnam (NULL);
   char **nl=NULL;
   int  nn=0;
   char *dup=NULL;
-  
+
   if (!fname || !check_file_exists (fname))return NULL;
   fp=vfopen (remove_charset_from_file (fname, " \t\n\r"), "r");
-  
+
   if (!fp)return NULL;
   R=T=new_declare_tree_node ();
-  
+
   while ((c=fgetc(fp))!=';' && c!=EOF)
     {
       if (c=='(')
@@ -5472,9 +5472,9 @@ NT_node file2tree (char *fname)
 	      N=T->left=new_declare_tree_node ();
 	      N->parent=T;
 	    }
-	  
+
 	  T=N;
-	  
+
 	  lastc=0;
 	}
       else if (c==')')
@@ -5482,7 +5482,7 @@ NT_node file2tree (char *fname)
 	  T=T->parent;
 	  scan_name_and_dist (fp, T->name, &T->dist);
 	  if (T->name && T->name [0])T->bootstrap=atof (T->name);
-	  
+
 	  lastc=0;
 	}
       else if (c==',')
@@ -5496,7 +5496,7 @@ NT_node file2tree (char *fname)
 	  N->parent=T;
 	  if      (T && !T->right)T->right=N;
 	  else if (T && !T->left)T->left=N;
-	  else 
+	  else
 	    {
 	      N->right=T->right; (T->right)->parent=N;
 	      N->left=T->left; (T->left)->parent=N;
@@ -5504,13 +5504,13 @@ NT_node file2tree (char *fname)
 	      N=T->left=new_declare_tree_node ();
 	      N->parent=T;
 	    }
-	  
+
 	  T=N;
-	  	  
+
 	  ungetc (c, fp);
 	  scan_name_and_dist (fp, T->name, &T->dist);
 	  nl=(char**)vrealloc (nl, (nn+1)*sizeof (char*));
-	  
+
 	  nl[nn++]=T->name;
 	  T->leaf=1;
 	  T->isseq=1;
@@ -5519,27 +5519,27 @@ NT_node file2tree (char *fname)
     }
   T=T->parent;
   vfclose (fp);
-  
+
   if (R!=T)
     {
       HERE ("Parsing Error\n");
     }
-  
+
   if ( (dup=check_hlist_for_dup(nl,nn)))
 	{
 	  fprintf ( stderr, "ERROR -- Duplicated Sequences %s", dup);
 	  myexit(fprintf_error (stderr,"ERROR - file2tree: %s is duplicated in %s  ", fname));
 	}
- 
+
   else
     {
       vfree (nl);
     }
-  
+
  if (!T->right && T->left)T=T->left;
  else if (T->right && !T->left)T=T->right;
  T->parent=NULL;
-      
+
   return T;
 }
 
@@ -5588,11 +5588,11 @@ NT_node new_declare_tree_node ()
   //does not declare seqlist --> important when making very large trees
   NT_node p=NULL;
   static int node_index;
-	
+
   p= (NT_node)vcalloc (1, sizeof ( Treenode));
   if (!p)HERE ("Could Not Allocate Node");
-	
-	
+
+
   p->left = NULL;
   p->right = NULL;
   p->parent = NULL;
@@ -5602,17 +5602,17 @@ NT_node new_declare_tree_node ()
   p->index=++node_index;
   p->maxnseq=1000;
   p->name=(char*)vcalloc (MAXNAMES+1,sizeof (char));
-  
+
   p->name[0]='\0';
-  
-  
+
+
   return p;
 
 }
 void display_tree_lseq2 (NT_node T, int n)
 {
   if (!T) return;
-  else 
+  else
     {
       int a;
       for (a=0; a<n; a++)
@@ -5806,14 +5806,14 @@ NT_node * tree2seqnode_list (NT_node p, NT_node *L)
   int n=0;
   int nn=tree2nnode(p);
   reset_node_count (p);
-  
+
   if (!L) {L=(NT_node*)vcalloc (nn+1, sizeof (NT_node));}
   while (p)
     {
       if (!p->visited && p->isseq)L[n++]=p;
-      
+
       int x=++(p->visited);
-      
+
       if (!p->isseq)
 	{
 	  if (x==1)
@@ -5829,11 +5829,11 @@ NT_node * tree2seqnode_list (NT_node p, NT_node *L)
 	      p=p->parent;
 	    }
 	}
-      
+
       if (x>=3 || p->isseq)
 	{
 	  if (p && p->isseq && !p->visited ){L[n++]=p, p->visited=1;}
-	  
+
 	  if (x>3)p=NULL;
 	  else if (p) p=p->parent;
 	}
@@ -5847,7 +5847,7 @@ NT_node   duplicate_tree (NT_node T)
   NT_node *L2=(NT_node*)vcalloc (arrlen(L1)+2, sizeof (NT_node));
   NT_node ROOT;
   int a;
-  
+
   a=0;
   while (L1[a])
     {
@@ -5861,15 +5861,15 @@ NT_node   duplicate_tree (NT_node T)
       NT_node R=L1[a];
       NT_node N=L2[a];
       int p, r, l;
-      
+
       p=(R->parent)?(R->parent)->order:-1;
       l=(R->left )?(R->left )->order:-1;
       r=(R->right)?(R->right)->order:-1;
-      
+
       if (R->parent)N->parent=L2[(R->parent)->order];
       if (R->left  )N->left  =L2[(R->left  )->order];
       if (R->right )N->right =L2[(R->right )->order];
-      
+
       if (!N->parent)ROOT=N;
       if (R->isseq)
 	{
@@ -5881,20 +5881,20 @@ NT_node   duplicate_tree (NT_node T)
   vfree (L1); vfree (L2);
   return ROOT;
 }
-      
+
 NT_node * tree2node_list (NT_node p, NT_node *L)
 {
   int n=0;
   int nn=tree2nnode(p);
   reset_node_count (p);
-  
+
   if (!L) {L=(NT_node*)vcalloc (nn+2, sizeof (NT_node));}
   while (p)
     {
       if (!p->visited)L[n++]=p;
-      
+
       int x=++(p->visited);
-      
+
       if (!p->isseq)
 	{
 	  if (x==1)
@@ -5910,11 +5910,11 @@ NT_node * tree2node_list (NT_node p, NT_node *L)
 	      p=p->parent;
 	    }
 	}
-      
+
       if (x>=3 || p->isseq)
 	{
 	  if (p && p->isseq && !p->visited ){L[n++]=p, p->visited=1;}
-	  
+
 	  if (x>3)p=NULL;
 	  else if (p) p=p->parent;
 	}
@@ -5961,13 +5961,13 @@ int cmp_tree_array ( const void *p, const void *q)
 NT_node newick_string2tree (char *string)
 {
   char *tmp=vtmpnam (NULL);
-  
+
   if (!string) return NULL;
   printf_file (tmp,"w", "%s", string);
-  
+
   return main_read_tree (tmp);
 }
-  
+
 NT_node * read_tree_list (Sequence *S)
 {
   NT_node *T;
@@ -6248,7 +6248,7 @@ Split** count_splits( NT_node RT,Sequence *LIST, char *param)
 
 
   if (!param)param=def_param;
-  
+
 
   strget_param (param, "_NB_", "0", "%d", &nb);
   strget_param (param, "_TLIST_", "0", "%d", &tlist);
@@ -6487,7 +6487,7 @@ int treelist2split_list( Sequence *S, Sequence *TS)
   //Does not cout them
   NT_node *T;
   int n=0,nseq, a, c,s;
-  
+
   int *used;
 
   char *split_file, *sorted_split_file;
@@ -6505,7 +6505,7 @@ int treelist2split_list( Sequence *S, Sequence *TS)
   n=S->nseq;
   used=(int*)vcalloc (n, sizeof (int));
   T=read_tree_list (S);
-  
+
   if (!TS)
     {
       Sequence *S1=tree2seq(T[0], NULL);
@@ -6528,7 +6528,7 @@ int treelist2split_list( Sequence *S, Sequence *TS)
     }
   myexit (0);
   }
- 
+
 int treelist2split_count( Sequence *S, Sequence *TS)
 {
   NT_node *T;
@@ -6554,10 +6554,10 @@ int treelist2split_count( Sequence *S, Sequence *TS)
   used=(int*)vcalloc (n, sizeof (int));
 
   T=read_tree_list (S);
-  
+
   if (!TS)
     {
-      
+
       Sequence *S1=tree2seq(T[0], NULL);
       char *tmp1=vtmpnam (NULL);
       char *tmp2=vtmpnam(NULL);
@@ -6565,15 +6565,15 @@ int treelist2split_count( Sequence *S, Sequence *TS)
       for (a=0; a< S1->nseq; a++)
 	       {
 	           fprintf (fp,">%s\n", S1->name[a]);
-	       }    
+	       }
       vfclose (fp);
       printf_system ( "cat %s | sort > %s", tmp1, tmp2);
-      
+
       TS=get_fasta_sequence (tmp2, NULL);
     }
-  
-	  
-	
+
+
+
 
   nseq=TS->nseq;
   fp=vfopen (split_file, "w");
@@ -6588,16 +6588,16 @@ int treelist2split_count( Sequence *S, Sequence *TS)
       vfclose (fp);
       printf_system ("cat %s | grep 1 | sort | uniq >>%s", tmpF,split_file);
     }
-  
-  
+
+
   printf_system ("cp %s split_file::IGNORE_FAILURE::", split_file);
-  
+
   printf_system ( "cat %s | grep 1| sort > %s::IGNORE_FAILURE::", split_file, sorted_split_file);
   printf_system ("cp %s cedric", sorted_split_file);
-  
-  
+
+
   for ( a=0; a<TS->nseq; a++)fprintf ( stdout, "SEQ_INDEX %d %s\n", a+1, TS->name[a]);
-  fprintf(stdout, "#Legend: <1: minimum split size>\t<2: number of occurences>\t<3: coded split>\t<4: File list <file1>####<file2>>\t<5: Group 1 <leaf1>####<leaf2>>\t<6: Group 2 <leaf1>####<leaf2>>\n"); 
+  fprintf(stdout, "#Legend: <1: minimum split size>\t<2: number of occurences>\t<3: coded split>\t<4: File list <file1>####<file2>>\t<5: Group 1 <leaf1>####<leaf2>>\t<6: Group 2 <leaf1>####<leaf2>>\n");
 
   nsplit=file2nlines(sorted_split_file);
   split_list=(char**)vcalloc (nsplit+1, sizeof (char*));
@@ -6609,7 +6609,7 @@ int treelist2split_count( Sequence *S, Sequence *TS)
       buf=vfgets (buf, fp);
       buf [strlen(buf)-1]='\0';
       split_list[n]=csprintf (split_list[n], "%s",buf);
-      n++;  
+      n++;
       }
 
   csprintf (split_list[n], "finished\n");
@@ -6617,13 +6617,13 @@ int treelist2split_count( Sequence *S, Sequence *TS)
 
 
   for (s=0; s<nsplit; s++)
-    { 
+    {
       flushed=0;
       wl=string2list (split_list[s]);
       spl=wl[1];
       fname=wl[3];
-      
-      
+
+
       fprintf ( stdout, "\nTEST4: %s\n", buf);
 
       //To avoid any confusion, ALL splits start with 1, even if collected otherwise
@@ -6633,7 +6633,7 @@ int treelist2split_count( Sequence *S, Sequence *TS)
 	         spl[a]='1';
 	       else
 	         spl[a]='0';
-      
+
       if (!ref_spl)
 	     {
 	       ref_spl=(char*)vcalloc (strlen (spl)+1, sizeof (char));
@@ -6641,9 +6641,9 @@ int treelist2split_count( Sequence *S, Sequence *TS)
 	       file_list[0]='\0';
 	       n=1;
 	       if ( strm (fname, "Tree_1"))InMainT=1;
-         
-	     }      
-      
+
+	     }
+
       else if ( !strm (spl, ref_spl))//will have to deal with a new split
 	     {
 	       int i;
@@ -6654,21 +6654,21 @@ int treelist2split_count( Sequence *S, Sequence *TS)
 	        n0+=(ref_spl[i]=='0')?1:0;
 	        n1+=(ref_spl[i]=='1')?1:0;
 	       }
-	  
+
 	     if (n>1 && strstr (file_list, fname));
 	     else
 	       {
 	         if (n>1)strcat (file_list, "####");
 	         strcat (file_list, fname);
 	       }
-	  
+
 	     n-=InMainT;
-	  
+
 	     fprintf (stdout, "#SPLIT1,%15s,%d,%d,%s,%s,%s\n",S->file[0],((n0>n1)?n1:n0),n,ref_spl,(InMainT==0)?"replicate":"original", (strstr(S->file[0], "_3d_"))?"3d":"1d");
        flushed=1;
 	     fprintf ( stdout, "#SPLIT2: %15s %d\t%d\t%s\t%s\t",S->file[0],((n0>n1)?n1:n0),n,ref_spl, file_list);
-	  
-	  
+
+
 	    for (i=0,a=0; a<nseq; a++)
 	      if (ref_spl[a]=='1')
 	        {
@@ -6691,7 +6691,7 @@ int treelist2split_count( Sequence *S, Sequence *TS)
 	   if strm (fname, "Tree_1")InMainT=1;
 	   else InMainT=0;
 	   }
-  else 
+  else
 	   {
 	     if (n>1)strcat (file_list, "####");
 	     strcat (file_list, fname);
@@ -6700,8 +6700,8 @@ int treelist2split_count( Sequence *S, Sequence *TS)
 	   }
    }
   free_char (wl, -1);
-  
-  
+
+
 int i;
          n0=0, n1=0;
 
@@ -6710,21 +6710,21 @@ int i;
           n0+=(ref_spl[i]=='0')?1:0;
           n1+=(ref_spl[i]=='1')?1:0;
          }
-    
+
        if (n>1 && strstr (file_list, fname));
        else
          {
            if (n>1)strcat (file_list, "####");
            strcat (file_list, fname);
          }
-    
+
        n-=InMainT;
-    
+
        fprintf (stdout, "#SPLIT1,%15s,%d,%d,%s,%s,%s\n",S->file[0],((n0>n1)?n1:n0),n,ref_spl,(InMainT==0)?"replicate":"original", (strstr(S->file[0], "_3d_"))?"3d":"1d");
        flushed=1;
        fprintf ( stdout, "#SPLIT2: %15s %d\t%d\t%s\t%s\t",S->file[0],((n0>n1)?n1:n0),n,ref_spl, file_list);
-    
-    
+
+
       for (i=0,a=0; a<nseq; a++)
         if (ref_spl[a]=='1')
           {
@@ -6741,7 +6741,7 @@ int i;
           i=1;
           }
      fprintf (stdout, "\n");
-    
+
   myexit (0);
 }
 
@@ -7281,22 +7281,22 @@ Alignment *treelist2cons (Alignment *T)
 
   if (!T) return T;
   else if (T->Tree)return treelist2cons (T->Tree);
-  
+
   fp=vfopen (infile, "w");
   for (a=0; a<T->nseq; a++)
     {
       fprintf (fp, "%s\n", T->seq_al[a]);
     }
   vfclose (fp);
-    
+
   printf_system( "msa2bootstrap.pl -i %s -o %s -input tree >/dev/null 2>/dev/null", infile, outfile);
-  
+
   vfree (T->seq_al[0]);
   T->seq_al[0]=file2string(outfile);
-  
+
   sprintf (T->name[0], "MajorityConsensusTree");
   sprintf (T->seq_comment[0], "Raplicates: %d Source: consense", T->nseq);
-  
+
   T->nseq=1;
   return T;
 }
@@ -7309,14 +7309,14 @@ float group2tree_score (Sequence *G, char *nwtree)
   Sequence *S;
   int a, b;
   int *l1, *bl2;
-  
+
   if (!nwtree || !nwtree[0]) return -1;
-  
+
   bl2=NULL;
   T=newick_string2tree(nwtree);
   S=tree2seq(T, NULL);
   l1=(int*)vcalloc (S->nseq, sizeof (int));
-  
+
   for (a=0; a<G->nseq; a++)
     {
       if ((b=name_is_in_list (G->name[a], S->name, S->nseq, 100))!=-1)
@@ -7339,10 +7339,10 @@ float group2tree_score (Sequence *G, char *nwtree)
 	      else if (l2[a])t++;
 	      else if (l1[a]){a=S->nseq; c=0;}
 	    }
-	  
+
 	  cs=(c>0)?c/(c+t):0;
 	  if (cs>bs){bs=cs;bl2=l2;}
-	  
+
 	  for (c=0,t=0,a=0; a<S->nseq; a++)l2[a]=1-l2[a];
 	  for (c=0,t=0,a=0; a<S->nseq; a++)
 	    {
@@ -7355,8 +7355,8 @@ float group2tree_score (Sequence *G, char *nwtree)
 	}
       L++;
     }
-  
-  
+
+
   free_tree (T);
   free_sequence (S, S->nseq);
   vfree (iL);
@@ -7364,7 +7364,7 @@ float group2tree_score (Sequence *G, char *nwtree)
   return bs;
 }
 
-  
+
 Alignment *treelist2node_support_best (Alignment *T)
 {
   NT_node *RT, TT;
@@ -7372,9 +7372,9 @@ Alignment *treelist2node_support_best (Alignment *T)
   int a, b, best_tree;
   float s=0, best_s=0;
   char *p;
-  
+
   if (T->Tree)return treelist2node_support_best (T->Tree);
-  
+
   RT=(NT_node*)vcalloc (T->nseq, sizeof (NT_node));
   for (a=0; a<T->nseq; a++)
     {
@@ -7384,7 +7384,7 @@ Alignment *treelist2node_support_best (Alignment *T)
       RT[a]=prune_tree  (RT[a],S);
       RT[a]=recode_tree (RT[a],S);
     }
-  
+
   for (best_s=best_tree=0,a=0;a<T->nseq; a++)
     {
       output_completion (stderr,a,T->nseq,1, "Scan for the best Supported Tree");
@@ -7394,13 +7394,13 @@ Alignment *treelist2node_support_best (Alignment *T)
 	}
       if (s>best_s){best_s=s; best_tree=a;}
     }
-  
+
   s=(best_s/(float)(T->nseq-1))*100;
 
   p=tree2string (RT[best_tree]);
   T->seq_al[0]=(char*)vrealloc (T->seq_al[0],(strlen (p)+1)*sizeof (char));
   sprintf (T->seq_al[0], "%s",p);
-  
+
   sprintf (T->name[0], "OriginalDistanceTree");
   sprintf (T->seq_comment[0], "Replicates: %d AverageNodeSupport: %.2f %% Source: seq_reformat", T->nseq, s);
   T->nseq=1;
@@ -7413,7 +7413,7 @@ Alignment *treelist2node_support_best (Alignment *T)
 Alignment *treelist2bs_compare (Alignment *T1, Alignment *T2)
 {
   int a;
-  
+
   if (!T1) return T1;
   if (!T2) T2=T1;
   fprintf ( stdout, "#TreeIndex;Node_Count;Node Bootsrap;NormalizedNodeDepth\n");
@@ -7437,29 +7437,29 @@ void compare_bs (char *string, char *T1, char *T2)
   S=tree2seq(t1, NULL);
   t1=recode_tree (t1,S);
   t2=recode_tree (t2,S);
-  
+
   display_compare_bs (string,t1, t2, S->nseq);
   free_tree (t1);
   free_tree(t2);
   free_sequence (S, S->nseq);
-  
+
 }
 void display_compare_bs (char *string, NT_node t1, NT_node t2, int nseq)
 {
   if (!t1) return;
-  
+
   else
     {
       int a;
       if (t1->left)
 	{
 	  float depth=0;
-	  for (a=0; a<nseq; a++) 
+	  for (a=0; a<nseq; a++)
 	    {
 	      //fprintf ( stdout, "%d", t1->lseq2[a]);
 	      depth+=t1->lseq2[a];
 	    }
-	  
+
 	  depth=MIN(depth, (nseq-depth))/(nseq/2);
 	  if (depth<1)fprintf ( stdout, "%s;%.4f;%.4f;%.2f\n", string?string:"",t1->bootstrap, t2->bootstrap, depth);
 	}
@@ -7472,7 +7472,7 @@ Alignment *treelist2node_support (Alignment *T)
 {
   if (!T) return T;
   else if (T->Tree)return treelist2node_support (T->Tree);
-  
+
   return tree2node_support (T->seq_al[0], T);
 }
 NT_node reset_bs2 (NT_node T);
@@ -7493,11 +7493,11 @@ char*tree2node_support_simple (char *newick_tree, Alignment *T,float *bs)
   float s=0;
   char *p;
   RT=newick_string2tree(newick_tree);
-  
+
   S=tree2seq(RT, NULL);
   RT=recode_tree (RT,S);
   RT=reset_bs2 (RT);
-  
+
   for (a=1; a<T->nseq; a++)
     {
       TT=newick_string2tree(T->seq_al[a]);
@@ -7506,9 +7506,9 @@ char*tree2node_support_simple (char *newick_tree, Alignment *T,float *bs)
       s+=update_node_support (RT, TT,S->nseq);
       free_tree (TT);
     }
-  
-  
-  
+
+
+
   //make sure new tree is not longuer than previous
   if (bs)bs[0]=s;
   p=tree2string (RT);
@@ -7520,10 +7520,10 @@ Alignment *tree2node_support (char *newick_tree, Alignment *T)
 {
   char *p;
   float s=0;
-  
+
 
   p=tree2node_support_simple(newick_tree, T, &s);
-  
+
   T->seq_al[0]=(char*)vrealloc (T->seq_al[0],(strlen (p)+1)*sizeof (char));
   sprintf (T->seq_al[0], "%s",p);
   sprintf (T->name[0], "OriginalDistanceTree");
@@ -7539,30 +7539,30 @@ float update_node_support (NT_node T1, NT_node T2, int nseq)
   //Trees must have been -prune_tree- and -recode_tree- with the same referecne sequence
   //updates node boostrap values in T1
   //Returns the number of nodes in T2 supporting nodes in T1
-  
+
   float sc=0;
   float tot=0;
   NT_node *L1,*iL1,*L2,*iL2;
   int *l1seq, *l2seq, *rl1seq;
   int a;
   if (!T1 || !T2 || !nseq) return 0;
-  
 
- 
+
+
   L1=iL1=tree2node_list (T1, NULL);
   L2=iL2=tree2node_list (T2, NULL);
   rl1seq=(int*)vcalloc (nseq, sizeof (int));
-  
+
   while (L1 && L1[0])
     {
       NT_node*L2=iL2;
       while (L2 && L2[0])
 	{
-	  
+
 	  l1seq=(L1[0])->lseq2;
 	  l2seq=(L2[0])->lseq2;
 	  for (a=0; a<nseq; a++)rl1seq[a]=1-l1seq[a];
-	  
+
 	  if (memcmp (rl1seq, l2seq, nseq*sizeof(int)) && memcmp (l1seq, l2seq, sizeof (int)*nseq))L2++;
 	  else
 	    {
@@ -7574,7 +7574,7 @@ float update_node_support (NT_node T1, NT_node T2, int nseq)
       tot++;
       L1++;
     }
-  
+
   vfree (iL1);
   vfree (iL2);
   vfree (rl1seq);
@@ -7592,31 +7592,31 @@ int **treelist2ns (NT_node T,Sequence *B,char *ref)
     int *tot;
     int *nr;
     int *bsr;
-    
+
     S=tree2seq(T, NULL);
     T=recode_tree(T,S);
     NL=tree2node_list (T, NULL);
     n=tree2nnode(T);
     for (a=0; a<n; a++)(NL[a])->bootstrap=0;
-    
+
     if (ref)
       {
 	R=main_read_tree (ref);
 	R=recode_tree(R,S);
 	update_node_support (T, R, S->nseq);
       }
-    
+
     support=declare_int (B->nseq+1, n);
     max=(int*)vcalloc (B->nseq+1, sizeof (int));
     tot=(int*)vcalloc (B->nseq+1, sizeof (int));
     nr=(int*)vcalloc (B->nseq+1, sizeof (int));
-    
+
     for (a=0; a<n; a++)
       {
 	support[0][a]=(int)(NL[a])->bootstrap;
 	(NL[a])->bootstrap=0;
       }
-    
+
     bsr=(int*)vcalloc (B->nseq+1, sizeof (int));
     bsr[0]=1;
     for (r=1; r<=B->nseq; r++)
@@ -7628,18 +7628,18 @@ int **treelist2ns (NT_node T,Sequence *B,char *ref)
       {
 	int nt;
 	char ** list;
-	
+
 
 	HERE ("--- Process %s", B->name[r-1]);
-	
+
 	if (!check_file_exists (B->name[r-1]))
 	  {
 	    printf_exit (EXIT_FAILURE,stderr, "%s is not a valid file. treelist2ns takes as input a fasta-like list of files containing trees", B->name[r-1]);
 	  }
-	    
+
 	list=file2lines (B->name[r-1]);
 	if (list==NULL)myexit (fprintf_error (stderr,"File %s is empty",B->name[r-1]));
-	
+
 	nt=atoi(list[0]);
 	nr[r]=nt-1;
 	for (t=1; t<nt; t++)
@@ -7650,7 +7650,7 @@ int **treelist2ns (NT_node T,Sequence *B,char *ref)
 	    TT=recode_tree(TT,S);
 	    update_node_support (T, TT,S->nseq);
 	    free_tree (TT);
-	  } 
+	  }
 	for (a=0; a<n; a++)
 	  {
 	    support[r][a]=(int)(NL[a])->bootstrap;
@@ -7658,20 +7658,20 @@ int **treelist2ns (NT_node T,Sequence *B,char *ref)
 	  }
 	free_char (list, -1);
       }
-    
+
     fprintf (stdout, "#NodeSupport_01\n#TaxonList:");
     for (a=0; a<S->nseq; a++)
       fprintf (stdout, "%s ", S->name[a]);
     fprintf (stdout, "\n");
     if (ref)fprintf (stdout, "#REF: %s\n", ref);
     else fprintf (stdout, "#REF: none\n");
-    
+
     fprintf (stdout, "#N_REPLICATE: %d\n", B->nseq);
     for (a=0; a<B->nseq; a++)
       fprintf (stdout, "#REPLICATE: %3d %s %4d\n", a+1, B->name[a], nr[a+1]);
-    
+
     fprintf (stdout, "#NODE: <list> <depth> <correct> <support from replicate X..>\n");
-	     
+
     for (a=0; a< n; a++)
       {
 	if ((NL[a])->nseq>1 && (NL[a]->nseq<(S->nseq-1)))
@@ -7698,13 +7698,13 @@ int **treelist2ns (NT_node T,Sequence *B,char *ref)
     fprintf (stdout, "#AVG: ");
     for (r=1; r<=B->nseq; r++)fprintf (stdout, "%6.4f ", ((float)tot[r]/(float)max[r])/(float)nr[r]);
     fprintf (stdout, "\n");
-    
+
     if (ref)
       {
 	float yes=0;
 	float no=0;
 	float totn=0;
-	
+
 	for (a=0; a<n; a++)
 	  if ((NL[a])->nseq>1 && (NL[a]->nseq<(S->nseq-1)))
 	    {
@@ -7743,16 +7743,16 @@ NT_node treelist2bootstrap2( Alignment *A)
   static char*tlist=vtmpnam (NULL);
   static char*outf =vtmpnam (NULL);
   NT_node T;
-	    
+
   int nrep;
   nrep=output_treelist   (tlist, A);
   printf_system( "msa2bootstrap.pl -i %s -o %s -input tree >/dev/null 2>/dev/null",tlist, outf);
-  
+
   T=main_read_tree(outf);
   T=tree_dist2normalized_tree_dist (T,nrep);
   return T;
 }
-  
+
 NT_node treelist2bootstrap ( NT_node *L, char *file)
 {
   char *outfile;
@@ -7764,7 +7764,7 @@ NT_node treelist2bootstrap ( NT_node *L, char *file)
       file=vtmpnam (NULL);
       vfclose (print_tree_list (L,"newick", vfopen (file, "w")));
     }
-      
+
   outfile=vtmpnam (NULL);
 
   printf_system( "msa2bootstrap.pl -i %s -o %s -input tree >/dev/null 2>/dev/null", file, outfile);
@@ -7899,19 +7899,19 @@ NT_node tree2nni (NT_node S, NT_node T)
 
   if (!S)return NULL;
   if (!T)T=S;
-  
-  
+
+
   if (has_nni(S))
     {
       nni (S,0);
       print_newick_tree (T, "stdout");
       nni (S,0);
-      
+
       nni (S,1);
       print_newick_tree (T, "stdout");
       nni (S,1);
     }
-  
+
   tree2nni(S->left,T);
   tree2nni(S->right,T);
   return S;
@@ -7957,10 +7957,10 @@ NT_node tree2dnd4dpa (NT_node T, Sequence *S, int N, char *method)
   int cn=0;
   KT_node K =tree2ktree  (T,T, S, N);
   KT_node*KL=(KT_node*)vcalloc (K->tot, sizeof (KT_node));
-  
+
   n=ktree2klist(K,KL,&n);
   kseq2kmsa(T,KL,n, method);
-  
+
   return kmsa2dnd  (S,KL,n);
 }
 
@@ -7975,22 +7975,22 @@ KT_node*pool (KT_node *K1,int n1,int *n2in, int N)
 
   //for ( a=0; a<n1; a++){if (K1[a]->nseq<N)pool=1;}
   //if (!pool)return NULL;
-  
- 
+
+
 
   nseq=declare_int(n1, 2);
   for ( a=0; a<n1; a++)
     {
       nseq[a][0]=a;
       nseq[a][1]=K1[a]->nseq;
-      
+
     }
   sort_int (nseq, 2, 1, 0,n1-1);
-  
+
 
   K2=(KT_node*)vcalloc (n1, sizeof (KT_node));
   for (a=0; a<n1; a++)K2[a]=(KT_node)vcalloc (1, sizeof (KTreenode));
-  
+
   for (cn=0,n2=0, b=0; b< n1; b++)
     {
       if ( cn==0)
@@ -7998,21 +7998,21 @@ KT_node*pool (KT_node *K1,int n1,int *n2in, int N)
 	  K2[n2]->seqF=vtmpnam (NULL);
 	  K2[n2]->msaF=vtmpnam (NULL);
 	  K2[n2]->treeF=vtmpnam (NULL);
-	  
+
 	  n2++;
 	}
       a=nseq[b][0];
       cn+=K1[a]->nseq;
-      
+
       printf_system ("cat %s >> %s", K1[a]->seqF, K2[n2-1]->seqF);
       K2[n2-1]->nseq=cn;
-      
+
       K1[a]->msaF=K2[n2-1]->msaF;
-     
+
       if (cn>=N)cn=0;
-      
+
     }
-  
+
   free_int (nseq, -1);
   n2in[0]=n2;
   return K2;
@@ -8025,32 +8025,32 @@ char* tree2msa4dpa (NT_node T, Sequence *S, int N, char *method)
   char *outname;
   int cn=0;
   int dopool=get_int_variable ("reg_pool");
-  
+
   KT_node K =tree2ktree  (T,T, S, N);
   KT_node*KL=(KT_node*)vcalloc (K->tot, sizeof (KT_node));
   KT_node*KL2;
   int n2=0;
   int docons=0;
   int N2;
-  
+
   n=ktree2klist(K,KL,&n);
   ktree2display (K, "1");
   if (getenv ("DUMP_SEQ_BUCKETS") ||getenv ("DUMP_SEQ_BUCKETS_ONLY"))
     {
       ktree2seq_bucketsF(K, "seqdump.1");
       if (getenv ("DUMP_SEQ_BUCKETS_ONLY"))exit (0);
-    }  
- 
+    }
+
   //if (docons){N2=N*10;pool=1;}
   //else N2=N;
-  
+
   //This is where the slave MSAs are computed, all at once.
   if ( dopool && (KL2=pool(KL, n, &n2,N))!=NULL)
     {
       int a;
-         
+
       kseq2kmsa(T,KL2,n2, method);
-      
+
       for (a=0; a<n; a++)
 	{
 
@@ -8065,20 +8065,24 @@ char* tree2msa4dpa (NT_node T, Sequence *S, int N, char *method)
     }
   else
     {
-       
+      // printf("!!!![LUISA] kseq2kmsa \n");
+      // printf("!!!![LUISA] T %s \n", T);
+      // printf("!!!![LUISA] KL %s \n", KL);
+      // printf("!!!![LUISA] method %s \n", method);
+
       kseq2kmsa(T,KL,n, method);
     }
   if (getenv ("DUMP_ALN_BUCKETS") ||getenv ("DUMP_ALN_BUCKETS_ONLY"))
     ktree2aln_bucketsF(K, "alndump.");
-  
-  outname=kmsa2msa (K,S,NULL,NULL); 
+
+  outname=kmsa2msa (K,S,NULL,NULL);
 
   declare_aln_node (-1);//Free all the nodes declared
   vfree (KL);
   return outname;
 }
 
-	
+
 static int nalncol;
 ALNcol* declare_alncol ();
 ALNcol* declare_alncol ()
@@ -8098,17 +8102,17 @@ char *kmsa2msa (KT_node K,Sequence *S, ALNcol***S2,ALNcol*start)
   ALNcol *end;
   char *output;
   ALNcol *msa;
-    
+
   if (!start)
     {
       S2=(ALNcol***)vcalloc (S->nseq, sizeof (ALNcol**));
       for (s=0; s<S->nseq; s++)S2[s]=(ALNcol**)vcalloc (S->len[s], sizeof (ALNcol*));
       A=quick_read_fasta_aln (A,K->msaF);
-      
+
       start=msa2graph(A,S, S2,start, -1);
       out=vtmpnam (NULL);
     }
-  
+
   for (a=0; a<K->nc; a++)
     {
       int i =name_is_in_hlist((K->child[a])->name,S->name, S->nseq);
@@ -8117,11 +8121,11 @@ char *kmsa2msa (KT_node K,Sequence *S, ALNcol***S2,ALNcol*start)
       kmsa2msa (K->child[a], S, S2,start);
     }
   free_aln (A);
-  
+
   //OUT only defined in the parent process
   //This is how the recursion stops
   if (!out) return out;
-  
+
   output=get_string_variable ("output");
 
   msa=start;
@@ -8145,7 +8149,7 @@ char *kmsa2msa (KT_node K,Sequence *S, ALNcol***S2,ALNcol*start)
 	      S2[s][c]->aa=S->seq[s][c];
 	    }
 	  fprintf (fp, ">%s\n", S->name[s]);
-	  
+
 	  r=0;
 	  while (msa->next)
 	    {
@@ -8153,7 +8157,7 @@ char *kmsa2msa (KT_node K,Sequence *S, ALNcol***S2,ALNcol*start)
 		{
 		  fprintf (fp, "-");
 		}
-	      else if (msa->aa>0) 
+	      else if (msa->aa>0)
 		{
 		  fprintf (fp, "%c",msa->aa);
 		  msa->aa=0;
@@ -8161,7 +8165,7 @@ char *kmsa2msa (KT_node K,Sequence *S, ALNcol***S2,ALNcol*start)
 	      r++;
 	      msa=msa->next;
 	    }
-	  
+
 	  fprintf (fp, "\n");
 	}
       vfclose (fp);
@@ -8174,18 +8178,18 @@ char *kmsa2msa (KT_node K,Sequence *S, ALNcol***S2,ALNcol*start)
 	  int r=0;
 	  ALNcol*msa=start;
 	  int cg=0;
-	  
+
 	  output_completion (stderr,s,S->nseq, 100, "Final MSA");
 	  for (c=0; c<S->len[s]; c++)
 	    {
 	      S2[s][c]->aa=S->seq[s][c];
 	    }
 	  fprintf (fp, ">%s\n", S->name[s]);
-	  
+
 	  while (msa->next)
 	    {
 	      if (msa->aa==0){cg++;}
-	      else if (msa->aa>0) 
+	      else if (msa->aa>0)
 		{
 		  if (cg){fprintf (fp, "%d",cg);cg=0;}
 		  fprintf (fp, "%c",msa->aa);
@@ -8213,24 +8217,24 @@ char *kmsa2msa (KT_node K,Sequence *S, ALNcol***S2,ALNcol*start)
        unsigned long ngap=0;
        unsigned long ngap2=0;
        int len=0;
-       
+
        while (msa->next)
 	 {
 	   homoplasy+=msa->homoplasy;
-	   whomoplasy+=msa->whomoplasy;	   
+	   whomoplasy+=msa->whomoplasy;
 	   whomoplasy2+=msa->whomoplasy2;
-	   
+
 	   ngap+=msa->ngap;
 	   ngap2+=msa->ngap*msa->ngap;
 	   msa=msa->next;
 	   if (msa->aa>=0)len++;
 	 }
-       
+
        fp2=vfopen (get_string_variable ("homoplasy"), "w");
        fprintf ( fp2, "HOMOPLASY: %d\n", homoplasy);
        fprintf ( fp2, "WEIGHTED_HOMOPLASY: %d\n", whomoplasy);
        fprintf ( fp2, "WEIGHTED_HOMOPLASY2: %d\n", whomoplasy2);
-       
+
        fprintf ( fp2, "LEN: %d\n", len-2);//substract start and end of msa data structure
        fprintf ( fp2, "NGAP: %lu\n", ngap);
        fprintf ( fp2, "NGAP2: %ul\n",ngap2);
@@ -8240,7 +8244,7 @@ char *kmsa2msa (KT_node K,Sequence *S, ALNcol***S2,ALNcol*start)
   vfree (start);
   for (s=0; s<S->nseq; s++)vfree (S2[s]);
   vfree (S2);
-  
+
   return out;
 }
 ALNcol * msa2graph (Alignment *A, Sequence *S, ALNcol***S2,ALNcol*msa,int seq)
@@ -8259,7 +8263,7 @@ ALNcol * msa2graph (Alignment *A, Sequence *S, ALNcol***S2,ALNcol*msa,int seq)
   int  nnseq;
   static int tt;
   static int tt2;
-  
+
   if (A->len_aln==0)return msa;
   nnseq=(msa)?(A->nseq+(msa->next)->nseq-1):A->nseq;
 
@@ -8278,13 +8282,13 @@ ALNcol * msa2graph (Alignment *A, Sequence *S, ALNcol***S2,ALNcol*msa,int seq)
       //This matches the index of seq in S - the complete sequence dataset and in A, the subMSA
       if (lu[s]==seq)subseq=s;
     }
-  
+
   //The MSA is a linked list of ALNcol having the length of the full MSA
   //S2 is a list of residues with each residue pointing to a position on MSA
   //This way, MSA is only ONE string of Length MSA as opposed to N Strings of length MSA
-  //When A is integrated within MSA, for each column, we look for an S2 residue pointing to an ALNcol in msa. 
+  //When A is integrated within MSA, for each column, we look for an S2 residue pointing to an ALNcol in msa.
   //If there is none, then this is an unmatched column and a column of gaps must be inserted in the rest of the sequences
-  
+
   gapcount=(int*)vcalloc ( A->len_aln, sizeof (int));
   rescount=(int*)vcalloc ( A->len_aln, sizeof (int));
   for ( s=0; s<A->nseq; s++)
@@ -8294,18 +8298,18 @@ ALNcol * msa2graph (Alignment *A, Sequence *S, ALNcol***S2,ALNcol*msa,int seq)
 	  if (A->seq_al[s][c]=='-')gapcount[c]++;
 	  else rescount[c]++;
 	}
-     
+
   if (msa && check_homoplasy)
     {
       int len, r;
       int *rpos=(int*)vcalloc (A->len_aln, sizeof (int));
-      
+
       //Homoplasy 1
       for (len=0,c=0; c<A->len_aln; c++)
 	{
 	  if (A->seq_al[subseq][c]!='-')rpos[len++]=c;
 	}
-      
+
       for (r=0; r<len-1; r++)
 	{
 	  int d1=rpos[r+1]-rpos[r];
@@ -8331,7 +8335,7 @@ ALNcol * msa2graph (Alignment *A, Sequence *S, ALNcol***S2,ALNcol*msa,int seq)
 	      re+=rescount[c];
 	    }
 	  sub=MIN(g,re);
-	  
+
 	  //Count gaps and res in main, keep lowest count
 	  start=(S2[seq][r])->next;
 	  end  =(S2[seq][r+1]);
@@ -8348,10 +8352,10 @@ ALNcol * msa2graph (Alignment *A, Sequence *S, ALNcol***S2,ALNcol*msa,int seq)
       vfree (rpos);
     }
 
-  
-  
-	
-  //Map new columns 
+
+
+
+  //Map new columns
   for (c=0; c<A->len_aln; c++)
     {
       p=NULL;
@@ -8365,11 +8369,11 @@ ALNcol * msa2graph (Alignment *A, Sequence *S, ALNcol***S2,ALNcol*msa,int seq)
 	    {
 	      p=S2[lu[s]][ir];graph[c]=p;
 	      p->nres+=rescount[c];
-	      
+
 	      break;
 	    }
 	}
-      
+
       //If no residue was found to be mapped for msa
       //all residues of this column will then be mapped onto this MSA position
       if (!p)
@@ -8378,14 +8382,14 @@ ALNcol * msa2graph (Alignment *A, Sequence *S, ALNcol***S2,ALNcol*msa,int seq)
 	  p->nres=rescount[c];
 	}
       for (s=0; s<A->nseq; s++)
-	{	  
+	{
 	  ir=pos[s][c];
 	  if (ir!=-1 && !S2[lu[s]][ir])S2[lu[s]][ir]=p;
 	  //p is an empty column it will trigger a insertion in msa in the next step.
 	}
     }
- 
-  
+
+
   if (!msa)//graph gets turned into msa
     {
       msa=start=declare_alncol();
@@ -8403,7 +8407,7 @@ ALNcol * msa2graph (Alignment *A, Sequence *S, ALNcol***S2,ALNcol*msa,int seq)
     {
       //Same as above but stack positions gapped between the same pair of residues in the guide sequence
       ALNcol*last=msa;
-           
+
       for (c=0; c<S->len[seq]; c++)(S2[seq][c])->aa=1;
       for (c=0; c<A->len_aln; c++)
 	{
@@ -8438,12 +8442,12 @@ ALNcol * msa2graph (Alignment *A, Sequence *S, ALNcol***S2,ALNcol*msa,int seq)
       //the new ones are the gaps and they need to be connected to the aa==1
       //This is the mode that was used in the NAture Biotech
       ALNcol*last=msa;
-           
+
       for (c=0; c<S->len[seq]; c++)(S2[seq][c])->aa=1;
       for (c=0; c<A->len_aln; c++)
 	{
 	  if (graph[c]->aa)last=graph[c];
-	  else 
+	  else
 	    {
 	      //This is where new columns of gaps are inserted in the MSA
 	      graph[c]->next=last->next;
@@ -8453,10 +8457,10 @@ ALNcol * msa2graph (Alignment *A, Sequence *S, ALNcol***S2,ALNcol*msa,int seq)
 	}
       for (c=0; c<S->len[seq]; c++)(S2[seq][c])->aa=0;
     }
-  
-      
+
+
   //This assigns an index to every column in the linked list MSA
-  
+
   if (check_homoplasy)
     {
       int i=0;
@@ -8472,14 +8476,14 @@ ALNcol * msa2graph (Alignment *A, Sequence *S, ALNcol***S2,ALNcol*msa,int seq)
 	  st=st->next;
 	}
     }
-  
-  
+
+
   vfree (graph);
   vfree (lu);
   free_int (pos,-1);
   vfree (gapcount); vfree(rescount);
   return msa;
-}  
+}
 
 int ktree2aln_bucketsF(KT_node K,char *fname)
 {
@@ -8489,13 +8493,13 @@ int ktree2aln_bucketsF(KT_node K,char *fname)
     {
       char *nfname=(char*)vcalloc (1000, sizeof (char));
       int a;
-      
+
       for (a=0; a<K->nc; a++)
 	{
 	  sprintf (nfname, "%s.%d.aln_bucket",fname, a+1);
 	  printf_system ("cp %s %s", K->msaF, nfname);
 	  sprintf (nfname, "%s.%d",fname, a+1);
-	  ktree2seq_bucketsF (K->child[a],nfname); 
+	  ktree2seq_bucketsF (K->child[a],nfname);
 	}
       vfree (nfname);
     }
@@ -8508,7 +8512,7 @@ int ktree2parent_seq_bucketsF(KT_node K,char *fname)
     {
       char *nfname=(char*)vcalloc (1000, sizeof (char));
       int a;
-      
+
       printf_system ("cp %s %s", K->seqF, fname);
     }
   return 1;
@@ -8525,7 +8529,7 @@ int ktree2display(KT_node K,char *fname)
       for (a=0; a<K->nc; a++)
 	{
 	  char *nfname=csprintf(NULL, "%s.%d", fname, a+1);
-	  ktree2display(K->child[a],nfname); 
+	  ktree2display(K->child[a],nfname);
 	  vfree (nfname);
 	}
     }
@@ -8543,14 +8547,14 @@ int ktree2seq_bucketsF(KT_node K,char *fname)
       for (a=0; a<K->nc; a++)
 	{
 	  char *nfname=csprintf(NULL, "%s.%d", fname, a+1);
-	  ktree2seq_bucketsF (K->child[a],nfname); 
+	  ktree2seq_bucketsF (K->child[a],nfname);
 	  vfree (nfname);
 	}
 
     }
   return 1;
 }
-    
+
 int ktree2klist (KT_node K, KT_node *KL, int *n)
 {
   int a;
@@ -8574,23 +8578,23 @@ Alignment * sorttrim (Alignment *A,int ntrim)
   int bin,nbin=100;
   if (!A) return A;
   else if (A->nseq<=ntrim)return A;
-  
 
-  
+
+
 
   lu=declare_int     (nbin, A->nseq);
   max =(int*)vcalloc (nbin, sizeof (int));
   used=(int*)vcalloc (nbin, sizeof (int));
-    
+
   for (maxnseq=0,s=1; s<A->nseq; s++)
     {
       int bin, n, t;
-      
+
       for (t=0, n=0,c=0; c<A->len_aln; c++)
 	{
-	  char c1=A->seq_al[0][c]; 
-	  char c2=A->seq_al[s][c]; 
-	  
+	  char c1=A->seq_al[0][c];
+	  char c2=A->seq_al[s][c];
+
 
 	  if (c1=='-' || c2=='-')continue;
 	  if (c1!=c2)n++;
@@ -8601,10 +8605,10 @@ Alignment * sorttrim (Alignment *A,int ntrim)
       lu[bin][max[bin]++]=s;
       maxnseq++;
     }
-  
+
   fp=vfopen (tmp, "w");
   fprintf (fp, ">%s\n%s\n",A->name[0], A->seq_al[0]);
-  
+
   newn=0;
   while ( newn<maxnseq && newn<ntrim)
     {
@@ -8617,7 +8621,7 @@ Alignment * sorttrim (Alignment *A,int ntrim)
 	}
     }
   vfclose (fp);
-  
+
   vfree (max);
   vfree (used);
   free_int (lu, -1);
@@ -8637,8 +8641,8 @@ Sequence  * regtrim (Sequence *S, NT_node T, int N)
   int *used;
 
   //This defines the number of sequences that will be kept
-  
-  
+
+
   if (S->nseq==1)
     {
       fp=vfopen (tmp, "w");
@@ -8648,27 +8652,27 @@ Sequence  * regtrim (Sequence *S, NT_node T, int N)
     }
   //This is typically set to 1 to keep the first sequence
   int keep=get_int_variable ("keep");
-  
+
   if (!T)
     {
       char *tmode=get_string_variable ("treemode");
       if (tmode)T=seq2dnd(S,tmode);
       else T=seq2dnd(S,"codnd");
     }
-  
+
   if (!T)return NULL;
-  
+
   w=seq2dpa_weight (S, "longuest");
   T=node2master (T, S, w);
   T->leaf=0;
-    
+
   CL=(NT_node*)vcalloc (1, sizeof (NT_node));
   nc=0;CL[nc++]=T;
-  
+
   terminal=0;
   while (nc<N && !terminal)
     {
-      
+
       nn=0;
       terminal=1;
       NL=(NT_node*)vcalloc (nc*2, sizeof (NT_node));
@@ -8676,7 +8680,7 @@ Sequence  * regtrim (Sequence *S, NT_node T, int N)
 
       for (left=0; left<nc && (nn+(nc-left))<N; left++)
 	{
-	  
+
 	  NT_node N=CL[left];
 	  if (N->isseq){NL[nn++]=N; T->leaf++;}
 	  else
@@ -8693,12 +8697,12 @@ Sequence  * regtrim (Sequence *S, NT_node T, int N)
 	  if (!CL[a]->isseq)terminal=0;
 	  T->leaf++;
 	}
-      
+
       vfree (CL);
       CL=NL;
       nc=nn;
     }
-  
+
   fp=vfopen (tmp, "w");
   //used makes sure the keep first sequences are not duplicated
   used=(int*)vcalloc (S->nseq, sizeof (int));
@@ -8718,20 +8722,20 @@ Sequence  * regtrim (Sequence *S, NT_node T, int N)
       for (a=0; a<nc; a++)
 	{
 	  int s=ordered[a][0];
-	  
+
 	  if (!used[s])fprintf (fp, ">%s\n%s\n", S->name[s],S->seq[s]);
 	}
       vfclose (fp);
       free_int (ordered, -1);
-      
+
     }
   else
     {
       for (a=0; a<nc; a++)
 	{
-	  
+
 	  int s=CL[a]->seq;
-	  
+
 	  if (!used[s])fprintf (fp, ">%s\n%s\n", S->name[s],S->seq[s]);
 	}
       vfclose (fp);
@@ -8740,7 +8744,7 @@ Sequence  * regtrim (Sequence *S, NT_node T, int N)
   vfree (w);
   vfree(CL);
   return get_fasta_sequence (tmp,NULL);
-  
+
 }
 
 KT_node tree2ktree (NT_node ROOT,NT_node T,Sequence *S, int N)
@@ -8754,21 +8758,21 @@ KT_node tree2ktree (NT_node ROOT,NT_node T,Sequence *S, int N)
   if (N<2)N=2;
   //Dynamic is the variable that will be used to increase the bucket size from root to leaf
   int dynamic=get_int_variable ("reg_dynamic");
-  
+
   if (N==0)printf_exit ( EXIT_FAILURE,stderr, "\nERROR: Bucket size set to 0 (N=%d Dynamic=%d) [FATAL:tree2ktree]", N, dynamic);
   if (!T)return NULL;
-  
+
   T->leaf=0;
   //Make sure the node content is declared
   K=(KT_node)vcalloc (1, sizeof (KTreenode));
-  
+
   CL=(NT_node*)vcalloc (1, sizeof (NT_node));
   nc=0;CL[nc++]=T;
-  
+
   terminal=0;
   while (nc<N && !terminal)
     {
-      
+
       nn=0;
       terminal=1;
       NL=(NT_node*)vcalloc (nc*2, sizeof (NT_node));
@@ -8776,7 +8780,7 @@ KT_node tree2ktree (NT_node ROOT,NT_node T,Sequence *S, int N)
 
       for (left=0; left<nc && (nn+(nc-left))<N; left++)
 	{
-	  
+
 	  NT_node N=CL[left];
 	  if (N->isseq){NL[nn++]=N; T->leaf++;}
 	  else
@@ -8793,18 +8797,18 @@ KT_node tree2ktree (NT_node ROOT,NT_node T,Sequence *S, int N)
 	  if (!CL[a]->isseq)terminal=0;
 	  T->leaf++;
 	}
-      
+
       vfree (CL);
       CL=NL;
       nc=nn;
     }
   K->nseq=nc;
-  
-  
+
+
   K->seqF=vtmpnam(NULL);
   fp=vfopen (K->seqF, "w");
 
-  
+
 
   if (S->nseq>N)
     {
@@ -8816,33 +8820,33 @@ KT_node tree2ktree (NT_node ROOT,NT_node T,Sequence *S, int N)
 	  int s=ordered[a][0];
 	  fprintf (fp, ">%s\n%s\n", S->name[s],S->seq[s]);
 	}
-     
+
       free_int (ordered, -1);
     }
   else
     {
       for (a=0; a<nc; a++)
 	{
-	  
+
 	  int s=CL[a]->seq;
-	  
+
 	  fprintf (fp, ">%s\n%s\n", S->name[s],S->seq[s]);
 	}
     }
   vfclose (fp);
-  
-  
-  
+
+
+
   K->msaF=vtmpnam(NULL);
-    
+
   K->child=(KT_node*)vcalloc (nc, sizeof (KT_node));
   K->tot=1;
-    
+
   for (a=0; a<nc; a++)
     {
       if (!CL[a]->isseq)
 	{
-	  //The Children will be at max, dynamic times larger than their parent 
+	  //The Children will be at max, dynamic times larger than their parent
 	  K->child[K->nc]=tree2ktree (ROOT,CL[a],S, (dynamic>0)?N*dynamic:(-1*N/dynamic));
 	  (K->child[K->nc])->name=(CL[a])->name;
 	  K->tot+=(K->child[K->nc])->tot;
@@ -8859,20 +8863,20 @@ KT_node tree2ktree (NT_node ROOT,NT_node T,Sequence *S, int N)
 KT_node *free_ktree (KT_node K)
 {
   int n;
-  
+
   if (!K) return NULL;
   else if (K->nc==0)vfree (K);
-  else 
+  else
     {
       for (n=0; n<K->nc; n++)
 	free_ktree (K->child[n]);
       vfree ((KT_node**)K->child);
       vfree ((KT_node*)K);
-      
+
     }
   return NULL;
 }
-  
+
 int kseq2kmsa_serial   (NT_node T,KT_node *K, int n, char *method);
 int kseq2kmsa_nextflow (NT_node T,KT_node *K, int n, char *method);
 int kseq2kmsa_thread   (NT_node T,KT_node *K, int n, char *method);
@@ -8880,14 +8884,14 @@ int kseq2kmsa_thread   (NT_node T,KT_node *K, int n, char *method);
 int kseq2kmsa   (NT_node T,KT_node *K, int n, char *method)
 {
   int nproc=get_nproc();
-  
-    
+
+
   if ( strstr (method, "NF_"))
     return kseq2kmsa_nextflow(T,K, n, method);
-  
+
   return kseq2kmsa_thread (T,K, n, method);
 }
-  
+
 
 int kseq2kmsa_nextflow   (NT_node T,KT_node *K, int n, char *met)
 {
@@ -8896,12 +8900,12 @@ int kseq2kmsa_nextflow   (NT_node T,KT_node *K, int n, char *met)
   char *out=vtmpnam (NULL);
   TC_method *method=method_file2TC_method(method_name2method_file(met+3));
   char *command=make_aln_command (method,"inputfile", "outputfile");
- 
- 
+
+
   FILE *fp1=vfopen (in, "w");
   FILE *fp2=vfopen (out, "w");
   HERE ("%s", command);
-  
+
   for (a=0; a<n; a++)
     {
       fprintf (fp1, "%s %s\n", K[a]->seqF);
@@ -8909,18 +8913,18 @@ int kseq2kmsa_nextflow   (NT_node T,KT_node *K, int n, char *met)
     }
   vfclose (fp1);
   vfclose (fp2);
-  
+
   //Generate a NF pipleline that runs command on each seqF file so as to generate an msaF
   //Deploy the Nextflow command
   vfree (command);
-  
+
   printf_exit (EXIT_FAILURE, stderr,"NF_<method> is currently NOT supported\n");
   return 1;
 }
 
 char *tree2child_tree(NT_node T, char *seqF, char *mode)
 {
-   
+
   NT_node C;
   Sequence *S;
   char *treeF=NULL;
@@ -8937,12 +8941,12 @@ char *tree2child_tree(NT_node T, char *seqF, char *mode)
 return treeF;
 }
 
-    
+
 
 int kseq2kmsa_thread   (NT_node T,KT_node *K, int n, char *method)
 {
   int nproc=get_nproc();
-  
+
   int * njobs;
   KT_node **KL;
   int npid;
@@ -8950,12 +8954,12 @@ int kseq2kmsa_thread   (NT_node T,KT_node *K, int n, char *method)
   int a, b;
   int nt=0;
   //split the jobs
-  
- 
+
+
   KL=(KT_node**)vcalloc(nproc+1, sizeof (KT_node*));
   for (b=0; b<nproc; b++)
-    KL[b]=(KT_node*)vcalloc ((n/nproc)+5,sizeof (KT_node)); 
-  
+    KL[b]=(KT_node*)vcalloc ((n/nproc)+5,sizeof (KT_node));
+
   njobs=(int*)vcalloc (nproc, sizeof (int));
   for (a=0, b=0; a<n; a++, b++)
     {
@@ -8968,8 +8972,8 @@ int kseq2kmsa_thread   (NT_node T,KT_node *K, int n, char *method)
     }
   //deploy the jobs
   a=0;
-  
-  while (KL[a]) 
+
+  while (KL[a])
     {
       nt++;
       if (vvfork(NULL)==0)//child process
@@ -8980,11 +8984,16 @@ int kseq2kmsa_thread   (NT_node T,KT_node *K, int n, char *method)
 	      KT_node LK=KL[a][b];
 	      initiate_vtmpnam(NULL);//make sure existing tmp are not deleted when exiting.
 	      LK->treeF=tree2child_tree(T,LK->seqF,getenv("child_tree_4_TCOFFEE"));
-	      reg_seq_file2msa_file (method,LK->nseq,LK->seqF, LK->msaF, LK->treeF);
+
+        //printf("!!![TEST_LUISA]%s\n",method );
+        //printf("!!![TEST_LUISA]:::::: a %d\n",a );
+        //printf("!!![TEST_LUISA]:::::: b %d\n",b );
+
+	      reg_seq_file2msa_file (method,LK->nseq,LK->seqF, LK->msaF, LK->treeF,b);
 	      b++;
 	      if ( a==0)
 		output_completion (stderr, b, njobs[0], 100, method);
-	     
+
 	    }
 	  myexit (EXIT_SUCCESS);
 	}
@@ -8993,36 +9002,42 @@ int kseq2kmsa_thread   (NT_node T,KT_node *K, int n, char *method)
 	  a++;
 	}
     }
-  
+
   //collect the jobs
   a=0;
   while (KL[a++])
     {
       vwait(NULL);
     }
-  
+
   for ( a=0; a<n; a++)failed+=(check_file_exists (K[a]->msaF))?0:1;
   if (failed>0)
     printf_exit ( EXIT_FAILURE,stderr, "\nERROR: method %s failed to produce %d out of %d node alignments [FATAL]", method, failed, n);
   else
     fprintf (stderr, "\n!All Jobs collected\n");
-  
+
   vfree (njobs);
   for (a=0; a<nproc; a++)vfree (KL[a]);
   vfree (KL);
-  
+
   return n;
 }
-char *reg_seq_file2msa_file (char *method,int nseq, char* seqF, char* msaF, char *treeF)
+char *reg_seq_file2msa_file (char *method,int nseq, char* seqF, char* msaF, char *treeF, int level)
 {
   int use_old_constraint_list=0;
   char *com;
- 
-  
-  if (nseq==1)com=csprintf (NULL, "cp %s %s", seqF, msaF);    
+
+  // printf("!!![LUISA] %s\n", "RUNNNNING" );
+  // printf("!!![LUISA] %s\n",seqF );
+  // printf("!!![LUISA] %s\n",method );
+  // printf("!!![LUISA] %s\n",msaF );
+  // printf("!!![LUISA] %s\n",treeF );
+  // printf("!!![LUISA] --------------------------------------------------------  LEVEL : ::::::::::::::%d\n",level );
+
+  if (nseq==1)com=csprintf (NULL, "cp %s %s", seqF, msaF);
   else if (use_old_constraint_list)return seq_file2msa_file (method,seqF, msaF);
-  else com=csprintf (NULL, "dynamic.pl -method %s -seq %s -outfile %s -tree %s", method, seqF, msaF, treeF);
- 
+  else com=csprintf (NULL, "dynamic.pl -method %s -seq %s -outfile %s -tree %s -level %d", method, seqF, msaF, treeF, level);
+
   printf_system (com);
 
   if (!isfile(msaF))
@@ -9106,7 +9121,7 @@ ALN_node* kmsa2graph_multi (Sequence *S, KT_node K,Alignment *A0, ALN_node **lu0
 	      a++;
 	      b++;
 	    }
-	  
+
 	}
       for (c=0; c<b; c++)vwait(NULL);
     }
@@ -9119,13 +9134,13 @@ char* graph2aln (Sequence *S, ALN_node *aln, int nseq,char *out)
   FILE *fp=vfopen (out, "w");
   short*lu=(short*)vcalloc (S->nseq, sizeof (short));
   int a;
-  
-  
+
+
   fp=vfopen (out, "w");
   for (a=0; a<nseq; a++)
     {
       ALN_node seq=aln[a];
-      
+
       if (lu[seq->seqN]);
       else
 	{
@@ -9134,14 +9149,14 @@ char* graph2aln (Sequence *S, ALN_node *aln, int nseq,char *out)
 	  while (seq->aa!=')')
 	    {
 	      ALN_node pseq=seq;
-	      
+
 	      if (seq->aa!='(')fprintf (fp, "%c", seq->aa);
 	      seq=seq->r;
 	    }
 	  fprintf (fp, "\n");
 	}
     }
-  
+
   vfclose (fp);
   vfree (lu);
   return out;
@@ -9161,14 +9176,14 @@ NT_node kmsa2dnd (Sequence *S,KT_node *KL, int n)
   char **nname;
   int maxl, refseqI;
   NT_node T;
-  
+
   S2=(ALNcol***)vcalloc (S->nseq, sizeof (ALNcol**));
   for (s=0; s<S->nseq; s++)S2[s]=(ALNcol**)vcalloc (S->len[s], sizeof (ALNcol*));
-  
-  
+
+
   for (a=0; a<n; a++)
     {
-      
+
       Alignment *A=quick_read_aln (KL[a]->msaF);
       int * lu =(int*) vcalloc (A->nseq, sizeof (int));
       int **pos=(int**)declare_int (A->nseq, A->len_aln);
@@ -9183,14 +9198,14 @@ NT_node kmsa2dnd (Sequence *S,KT_node *KL, int n)
 	      else pos[s][c]=-1;
 	    }
 	}
-      
+
       for (c=0; c<A->len_aln; c++)
 	{
 	  ALNcol *p=NULL;
 	  for (s=0; s<A->nseq; s++)
 	    {
 	      int ir=pos[s][c];
-	      
+
 	      if (ir!=-1)
 		{
 		  if (S2[lu[s]][ir])
@@ -9207,7 +9222,7 @@ NT_node kmsa2dnd (Sequence *S,KT_node *KL, int n)
 	      if (ir!=-1)
 		{
 		  S2[lu[s]][ir]=p;
-		  
+
 		}
 	    }
 	}
@@ -9215,20 +9230,20 @@ NT_node kmsa2dnd (Sequence *S,KT_node *KL, int n)
       free_int (pos, -1);
       vfree(lu);
     }
-  
- 
+
+
   start=(ALNcol*)vcalloc (1, sizeof (ALNcol));
   end  =(ALNcol*)vcalloc (1, sizeof (ALNcol));
   start->aa=end->aa=-1;
   start->next=end;
-  
+
   for (s=0; s<S->nseq; s++)
     {
       ALNcol *cpos=start;
       output_completion (stderr,s,S->nseq, 100, "Threading Sequences to produce guide tree");
       for (c=0; c<S->len[s]; c++)
 	{
-	  
+
 	  ALNcol *p=S2[s][c];
 	  if (!p->next)
 	    {
@@ -9250,28 +9265,28 @@ NT_node kmsa2dnd (Sequence *S,KT_node *KL, int n)
   newseq=(char*)vcalloc (len_aln+1, sizeof (char));
   ro=declare_int (S->nseq, 2);
   nname=(char**)vcalloc (S->nseq, sizeof (char*));
-  
+
   getseq4kmsa2dnd(S->seq[refseqI],refseq,start,S2[refseqI]);
   for (a=0; a<S->nseq; a++)
     {
       getseq4kmsa2dnd(S->seq[a],newseq,start, S2[a]);
       ro[a][0]=a;
       ro[a][1]=get_seq_sim (refseq, newseq, "-", "sim1");
-      
+
     }
   sort_int (ro, 2, 1, 0, S->nseq-1);
-    
+
   for (a=0;a<S->nseq; a++)
     nname[a]=S->name[ro[a][0]];
-  
+
   T=list2balanced_dnd (nname, S->nseq);
   vfree (refseq);
   vfree (newseq);
   vfree (nname);
   free_int (ro, -1);
-  
+
   return T;
-  
+
 }
 
 char *getseq4kmsa2dnd (char *seq, char *alseq, ALNcol *start, ALNcol **S2)
@@ -9279,7 +9294,7 @@ char *getseq4kmsa2dnd (char *seq, char *alseq, ALNcol *start, ALNcol **S2)
   ALNcol *msa=start;
   int l=strlen (seq);
   int c, p, r;
-  
+
   for (c=0; c<l; c++)
     {
       S2[c]->aa=1;
@@ -9288,7 +9303,7 @@ char *getseq4kmsa2dnd (char *seq, char *alseq, ALNcol *start, ALNcol **S2)
   while (msa->next)
     {
       if (!msa->aa){alseq[p++]='-';}
-      else if (msa->aa==1) 
+      else if (msa->aa==1)
 	{
 	  alseq[p++]=seq[r++];
 	  msa->aa=0;
@@ -9303,7 +9318,7 @@ ALN_node ** msa2graph (Sequence *S, Alignment *A, ALN_node**lu)
   int *cc=(int*)vcalloc (A->nseq, sizeof (int));
   ALN_node **aln;
   int s, c;
-  
+
   if (!lu)
     {
       lu=(ALN_node**)vcalloc (A->nseq, sizeof (ALN_node*));
@@ -9312,7 +9327,7 @@ ALN_node ** msa2graph (Sequence *S, Alignment *A, ALN_node**lu)
 	  lu[s]=(ALN_node*)vcalloc (A->len_aln+2, sizeof (ALN_node));
 	}
     }
-  
+
   aln=(ALN_node**)vcalloc (A->nseq+4,sizeof (ALN_node*));
   for (s=0;s<A->nseq+4; s++)
     {
@@ -9324,21 +9339,21 @@ ALN_node ** msa2graph (Sequence *S, Alignment *A, ALN_node**lu)
     for (c=-1; c<=A->len_aln; c++)
       aln[s][c]=declare_aln_node(1);
 
-  
+
   for (s=-1; s<=A->nseq; s++)
     {
       int seqN=(s<0 || s==A->nseq)?-1:name_is_in_hlist (A->name[s], S->name, S->nseq);
-      
+
       for (c=-1; c<=A->len_aln; c++)
 	{
 	  ALN_node n=aln[s][c];
-	  
+
 	  n->seqN =seqN;
 	  n->p    =aln[s-1    ][c  ];
 	  n->c    =aln[s+1    ][c  ];
 	  n->l    =aln[s      ][c-1];
 	  n->r    =aln[s      ][c+1];
-	  
+
 	  if      (s==-1      ){n->aa='[';}
 	  else if (s== A->nseq){n->aa=']';}
 	  else if (c==-1      ){n->aa='(';if (n->seqN!=-1)lu[s][0]=n;}
@@ -9353,9 +9368,9 @@ ALN_node ** msa2graph (Sequence *S, Alignment *A, ALN_node**lu)
 		}
 	    }
 	}
-      
+
     }
-    
+
   aln-=2;
   for (s=0; s<A->nseq+4; s++)
     {
@@ -9365,20 +9380,20 @@ ALN_node ** msa2graph (Sequence *S, Alignment *A, ALN_node**lu)
   vfree (cc);
   return lu;
 }
-  
+
 ALN_node* kmsa2graph (Sequence *S,KT_node K,Alignment *A0, ALN_node **lu0, ALN_node *list, int *ns, int *done, int max)
 {
   int a,b,c, n;
   Alignment *A1;
-  
+
   if (!A0)
     {
       A0=quick_read_aln (K->msaF);
       lu0=msa2graph (S,A0, NULL);
       for (a=0; a<A0->nseq; a++)list[ns[0]++]=lu0[a][0];
       reset_output_completion ();
-    }  
-  
+    }
+
   for (a=0; a<K->nc; a++)
     {
       ALN_node m, s, t;
@@ -9386,9 +9401,9 @@ ALN_node* kmsa2graph (Sequence *S,KT_node K,Alignment *A0, ALN_node **lu0, ALN_n
       ALN_node **lu1=msa2graph (S,A1, NULL);
       int i0=name_is_in_list ((K->child[a])->name,A0->name, A0->nseq,MAXNAMES);
       int i1=name_is_in_list ((K->child[a])->name,A1->name, A1->nseq,MAXNAMES);
-      
+
       for (b=0; b<A1->nseq; b++)list[ns[0]++]=lu1[b][0];
-            
+
       n=0;
       while (lu0[i0][n])
 	{
@@ -9396,7 +9411,7 @@ ALN_node* kmsa2graph (Sequence *S,KT_node K,Alignment *A0, ALN_node **lu0, ALN_n
 	  int doprint=0;
 	  m=lu0[i0][n];
 	  s=lu1[i1][n];
-	  
+
 	  int lm=node2gap_len (m->r);
 	  int ls=node2gap_len (s->r);
 	  if (lm>0 || ls>0)
@@ -9409,8 +9424,8 @@ ALN_node* kmsa2graph (Sequence *S,KT_node K,Alignment *A0, ALN_node **lu0, ALN_n
 	      ALN_node ts=n2top(s);
 	      static Alignment *A;
 	      ALN_node buf;
-	      
-	      
+
+
 	      A=align_two_streches4dpa (master, slave, "blosum62mt",-4,-1, "myers_miller_pair_wise", A);
 	      for (c=0; c<A->len_aln; c++)
 		{
@@ -9423,17 +9438,17 @@ ALN_node* kmsa2graph (Sequence *S,KT_node K,Alignment *A0, ALN_node **lu0, ALN_n
 	    }
 	  n++;
 	}
-      
+
       done[0]+=1;
       //output_completion (stderr,done[0],max, 100, "Incorporating MSAs");
       insert_msa_in_msa (lu1[i1][0],lu0[i0][0]);
       list=kmsa2graph(S,K->child[a], A1, lu1, list, ns, done, max);
-      
+
       for (b=0; b<A1->nseq; b++)vfree(lu1[b]);
       vfree (lu1);
       free_aln (A1);
     }
-  
+
   return list;
 }
 
@@ -9442,58 +9457,58 @@ ALN_node* kmsa2graph_seq (Sequence *S,KT_node K,Alignment *A0, ALN_node **lu0, A
 {
   int a,b,c, n;
   Alignment *A1;
-  
+
   if (!A0)
     {
       A0=quick_read_aln (K->msaF);
       lu0=msa2graph (S,A0, NULL);
       for (a=0; a<A0->nseq; a++)list[ns[0]++]=lu0[a][0];
       reset_output_completion ();
-    }  
-  
+    }
+
   for (a=0; a<K->nc; a++)
     {
       static Alignment *A;
       static char **seq0;
       static char **seq1;
-      
+
       ALN_node m, s, t;
       A1 =quick_read_aln ((K->child[a])->msaF);
       ALN_node **lu1=msa2graph (S,A1, NULL);
       int i0=name_is_in_list ((K->child[a])->name,A0->name, A0->nseq,MAXNAMES);
       int i1=name_is_in_list ((K->child[a])->name,A1->name, A1->nseq,MAXNAMES);
-      
+
       for (b=0; b<A1->nseq; b++)list[ns[0]++]=lu1[b][0];
 
       seq0=graph2master_seq (lu0[i0][0], seq0);
       seq1=graph2master_seq (lu1[i1][0], seq1);
-      
+
       A=align_two_sequences4dpa (seq0[0],seq0[1],seq1[0], seq1[1],"blosum62mt",-4,-1, "myers_miller_pair_wise", A);
-      
-      
+
+
       m=n2top(lu0[i0][0]);
       s=n2top(lu1[i1][0]);
-      
+
       for (b=0; b<A->len_aln; b++)
 	{
 	  if (A->seq_al[0][b]=='-')m=insert_gap_in_graph (m);
 	  else m=m->r;
-	  
+
 	  if (A->seq_al[1][b]=='-')s=insert_gap_in_graph (s);
 	  else
 	    s=s->r;
 	}
-                  
+
       done[0]+=1;
       //output_completion (stderr,done[0],max, 100, "Incorporating MSAs");
       insert_msa_in_msa (lu1[i1][0],lu0[i0][0]);
       list=kmsa2graph(S,K->child[a], A1, lu1, list, ns, done, max);
-      
+
       for (b=0; b<A1->nseq; b++)vfree(lu1[b]);
       vfree (lu1);
       free_aln (A1);
     }
-  
+
   return list;
 }
 
@@ -9506,10 +9521,10 @@ char **graph2master_seq (ALN_node n, char **seq)
     if (!seq) seq=(char**)vcalloc (2, sizeof (char*));
     seq[0]=(char*)vrealloc(seq[0], (l+2)*sizeof (char));
     seq[1]=(char*)vrealloc(seq[1], (l+2)*sizeof (char));
-    
+
     t=n2FirstAA(n);
     n=n->r;
-    
+
     l=0;
     while (t->r)
       {
@@ -9525,7 +9540,7 @@ char **graph2master_seq (ALN_node n, char **seq)
 	      {
 		char r=s->aa;
 		aa[r]++;
-		
+
 		if (aa[r]>best_naa){best_naa=aa[r]; best_aa=r;}
 		s=s->c;
 	      }
@@ -9538,7 +9553,7 @@ char **graph2master_seq (ALN_node n, char **seq)
     seq[0][l]=seq[1][l]='\0';
     return seq;
   }
-    
+
 char *graph2cons (ALN_node m, int len)
 {
   char *master=(char*)vcalloc (len+1, sizeof (char));
@@ -9553,18 +9568,18 @@ char *graph2cons (ALN_node m, int len)
       int best_naa=0;
       char best_aa=0;
       for (a=0; a<256; a++)aa[a]=0;
-      
+
       while (s->c)
 	{
 	  char r=tolower(s->aa);
 	  aa[r]++;
-	  
+
 	  if (aa[r]>best_naa){best_naa=aa[r]; best_aa=r;}
 	  s=s->c;
 	}
       master[l++]=(best_aa=='-')?'x':best_aa;
       //master[l++]='x';
-      
+
       m=m->r;
     }
   master[l]='\0';
@@ -9574,26 +9589,26 @@ int insert_msa_in_msa (ALN_node s, ALN_node m)
 {
   int n=0;
   ALN_node botM, topM, botS, topS,lastM, firstM, lastS, firstS, is, im, aln;
-  
+
 
   m=n2FirstSeq(m);
   s=n2FirstSeq(s);
-  
+
   lastM=n2bot(m);lastM=lastM->p;
   firstS=n2top(s); firstS=firstS->c;
   lastS=n2bot (s); lastS=lastS->p;
-    
+
   while (lastM)
     {
       ALN_node bot=lastM->c;
       ALN_node newn=firstS;
-      
+
       lastM->c=firstS;
       firstS->p=lastM;
-      
+
       lastS->c=bot;
       bot->p=lastS;
-            
+
       lastM=lastM->r;
       firstS=firstS->r;
       lastS=lastS->r;
@@ -9642,7 +9657,7 @@ int node2nseq     (ALN_node n)
   int nseq=0;
   n=n2top(n);
   n=n->c;
-  
+
   while (n->c)
     {
       nseq++;
@@ -9653,21 +9668,21 @@ int node2nseq     (ALN_node n)
 int node2len (ALN_node n)
 {
   int len=0;
-  
+
   while (n){len++, n=n->r;}
   return len;
 }
 int node2len_left (ALN_node n)
 {
   int len=0;
-  
+
   while (n){len++, n=n->l;}
   return len;
 }
 int node2gap_len (ALN_node n)
 {
   int len=0;
-  
+
   while (n && n->aa=='-'){len++, n=n->r;}
   return len;
 }
@@ -9681,19 +9696,19 @@ ALN_node insert_gap_in_graph (ALN_node start)
   while (start)
     {
       n=declare_aln_node(1);
-      
+
       //parent
       n->p=pn;
       if (pn)pn->c=n;
       else top=n;
-      
+
       //chilren
       n->c=NULL;
-      
+
       //right
       n->r=start->r;
       if (n->r)(n->r)->l=n;
-      
+
       //left
       n->l=start;
       start->r=n;
@@ -9701,17 +9716,17 @@ ALN_node insert_gap_in_graph (ALN_node start)
       if      (!start->p)n->aa='[';
       else if (!start->c)n->aa=']';
       else n->aa='-';
-      
+
       pn=n;
       start=start->c;
     }
   return top;
 }
 
-      
 
 
-  
+
+
 
 ALN_node declare_aln_node (int mode)
 {
@@ -9724,7 +9739,7 @@ ALN_node declare_aln_node (int mode)
   static ALN_node buf;
 
 
-  
+
   if (mode==-1)
     {
       int a;
@@ -9738,31 +9753,31 @@ ALN_node declare_aln_node (int mode)
       buf=NULL;
       return NULL;
     }
-  
+
   if (!available)
     {
       int s;
 
       buf=(ALN_node)vmalloc (sizeof (alnnode)*chunk);
       available=chunk;
-      
+
       bufbuf=(ALN_node*)vrealloc (bufbuf,(bb+1)*sizeof (ALN_node));
       bufbuf[bb++]=buf;
     }
   available--;
   r=buf++;
   return r;
-}   
+}
 
-    
-  
+
+
 //checking Function
 int check_node(ALN_node n, char *txt)
 {
   ALN_node b;
   b=n;
   int count;
-  
+
   while (b)
     {
       if (b->p)
@@ -9793,7 +9808,7 @@ int check_node(ALN_node n, char *txt)
       b=b->r;
     }
 }
-  
+
 int check_node_integrity (ALN_node n, char *txt)
 {
   while (n)
@@ -9801,7 +9816,7 @@ int check_node_integrity (ALN_node n, char *txt)
       int l1=node2len (n);
       int l2=node2len (n2top(n));
       int l3=node2len (n2bot(n));
-      
+
       if (l1!= l2){HERE ("top %d %d", l1, l2);HERE ("%s", txt);exit (0);}
       if (l1!= l3){HERE ("bot %d %d", l1, l3);HERE ("%s", txt);exit (0);}
       n=n->r;
@@ -9908,10 +9923,10 @@ void display_left   (ALN_node n, char *text)
     }
   fprintf ( stdout, "\n");
 }
-      
+
 void check_aln_graph (Sequence *S, ALN_node *aln, int nseq)
 {
-  int a; 
+  int a;
   for (a =0; a<nseq; a++)check_seq_graph (S, aln[a]);
 }
 
@@ -9925,7 +9940,7 @@ void check_seq_graph (Sequence *S, ALN_node iseq)
       seq=seq->r;
     }
   fprintf (stdout, " %s\n",S->name[seq->seqN]);
-  
+
   seq=iseq;
   while (seq->aa!=')')
     {
@@ -9934,7 +9949,7 @@ void check_seq_graph (Sequence *S, ALN_node iseq)
       seq=seq->r;
     }
   fprintf (stdout, " %s\n",S->name[seq->seqN]);
-  
+
   seq=iseq;
   while (seq->aa!=')')
     {
@@ -9992,8 +10007,8 @@ char * kmsa2msa_d (Sequence *S,KT_node K, int max, int *cn)
   aln=(unsigned long*)vcalloc ((2*S->nseq)+1, sizeof (unsigned long));
   lu=(short*)vcalloc (S->nseq, sizeof (short));
   aln=kmsa2graph_d (S,K, NULL, NULL,aln,&nseq,&done,max);
-  
-  
+
+
   fp=vfopen (out, "w");
   for (a=0; a<nseq; a++)
     {
@@ -10013,7 +10028,7 @@ char * kmsa2msa_d (Sequence *S,KT_node K, int max, int *cn)
 	  fprintf (fp, "\n");
 	}
     }
-  
+
   vfclose (fp);
   vfree (aln);
   vfree (lu);
@@ -10023,14 +10038,14 @@ unsigned long* kmsa2graph_d (Sequence *S,KT_node K,Alignment *A0, unsigned long 
 {
   int a,b,c, n;
   Alignment *A1;
-  
+
   if (!A0)
     {
       A0=quick_read_aln (K->msaF);
       lu0=msa2graph_d (S,A0, NULL);
       for (a=0; a<A0->nseq; a++)list[ns[0]++]=lu0[a][0];
-    }  
-  
+    }
+
   for (a=0; a<K->nc; a++)
     {
       unsigned long m, s, t;
@@ -10038,17 +10053,17 @@ unsigned long* kmsa2graph_d (Sequence *S,KT_node K,Alignment *A0, unsigned long 
       unsigned long **lu1=msa2graph_d (S,A1, NULL);
       int i0=name_is_in_list ((K->child[a])->name,A0->name, A0->nseq,MAXNAMES);
       int i1=name_is_in_list ((K->child[a])->name,A1->name, A1->nseq,MAXNAMES);
-      
+
       for (b=0; b<A1->nseq; b++)list[ns[0]++]=lu1[b][0];
-            
+
       n=0;
       while (lu0[i0][n])
 	{
 	  int g;
-	  
+
 	  m=lu0[i0][n];
 	  s=lu1[i1][n];
-	  
+
 	  int lm=node2gap_len_d (rn_r(m));
 	  int ls=node2gap_len_d (rn_r(s));
 	  if (lm>0 || ls>0)
@@ -10060,8 +10075,8 @@ unsigned long* kmsa2graph_d (Sequence *S,KT_node K,Alignment *A0, unsigned long 
 	      unsigned long ts=n2top_d(s);
 	      static Alignment *A;
 	      ALN_node buf;
-	      
-	      
+
+
 	      A=align_two_streches4dpa (master, slave, "blosum62mt",-4,-1, "myers_miller_pair_wise", A);
 	      for (c=0; c<A->len_aln; c++)
 		{
@@ -10074,17 +10089,17 @@ unsigned long* kmsa2graph_d (Sequence *S,KT_node K,Alignment *A0, unsigned long 
 	    }
 	  n++;
 	}
-      
+
       done[0]+=1;
       output_completion (stderr,done[0],max, 100, "Incorporating MSAs");
       insert_msa_in_msa_d (lu1[i1][0],lu0[i0][0]);
       list=kmsa2graph_d(S,K->child[a], A1, lu1, list, ns, done, max);
-      
+
       for (b=0; b<A1->nseq; b++)vfree(lu1[b]);
       vfree (lu1);
       free_aln (A1);
     }
-  
+
   return list;
 }
 unsigned long ** msa2graph_d (Sequence *S, Alignment *A, unsigned long**lu)
@@ -10092,7 +10107,7 @@ unsigned long ** msa2graph_d (Sequence *S, Alignment *A, unsigned long**lu)
   int *cc=(int*)vcalloc (A->nseq, sizeof (int));
   unsigned long **aln;
   int s, c;
-  
+
   if (!lu)
     {
       lu=(unsigned long**)vcalloc (A->nseq, sizeof (unsigned long*));
@@ -10101,7 +10116,7 @@ unsigned long ** msa2graph_d (Sequence *S, Alignment *A, unsigned long**lu)
 	  lu[s]=(unsigned long*)vcalloc (A->len_aln+2, sizeof (unsigned long));
 	}
     }
-  
+
   aln=(unsigned long**)vcalloc (A->nseq+4,sizeof (unsigned long*));
   for (s=0;s<A->nseq+4; s++)
     {
@@ -10113,26 +10128,26 @@ unsigned long ** msa2graph_d (Sequence *S, Alignment *A, unsigned long**lu)
     for (c=-1; c<=A->len_aln; c++)
       aln[s][c]=declare_aln_node_d(1);
 
-  
+
   for (s=-1; s<=A->nseq; s++)
     {
       int seqN=(s<0 || s==A->nseq)?-1:name_is_in_hlist (A->name[s], S->name, S->nseq);
-      
+
       for (c=-1; c<=A->len_aln; c++)
 	{
 	  unsigned long n=aln[s][c];
-	  
+
 	  wn_seqN(n,seqN);
 	  wn_p(n,aln[s-1    ][c  ]);
 	  wn_c(n,aln[s+1    ][c  ]);
 	  wn_l(n,aln[s      ][c-1]);
 	  wn_r(n,aln[s      ][c+1]);
-	  
+
 	  if      (s==-1      ){wn_aa(n,'[');}
 	  else if (s== A->nseq){wn_aa(n,']');}
 	  else if (c==-1      )
 	    {
-	      
+
 	      wn_aa(n,'(');
 	      if (seqN!=-1)lu[s][0]=n;
 	    }
@@ -10147,9 +10162,9 @@ unsigned long ** msa2graph_d (Sequence *S, Alignment *A, unsigned long**lu)
 		}
 	    }
 	}
-      
+
     }
-  
+
   aln-=2;
   for (s=0; s<A->nseq+4; s++)
     {
@@ -10162,7 +10177,7 @@ unsigned long ** msa2graph_d (Sequence *S, Alignment *A, unsigned long**lu)
 int node2gap_len_d (unsigned long n)
 {
   int len=0;
-  
+
   while (n && rn_aa(n)=='-'){len++, n=rn_r(n);}
   return len;
 }
@@ -10182,12 +10197,12 @@ char *graph2cons_d (unsigned long m, int len)
       int best_naa=0;
       char best_aa=0;
       for (a=0; a<256; a++)aa[a]=0;
-      
+
       while ((c=rn_c(s))!=NULL)
 	{
 	  char r=tolower(rn_aa(s));
 	  aa[r]++;
-	  
+
 	  if (aa[r]>best_naa){best_naa=aa[r]; best_aa=r;}
 	  s=c;
 	}
@@ -10209,20 +10224,20 @@ unsigned long insert_gap_in_graph_d (unsigned long start)
     {
       unsigned long rr;
       n=declare_aln_node_d(1);
-      
+
       //parent
       wn_p(n,pn);
       if (pn)wn_c(pn,n);
       else top=n;
-      
+
       //chilren
       wn_c(n,NULL);
-      
+
       //right
       wn_r(n, rn_r(start));
       rr=rn_r(n);
       if (rr)wn_l(rr,n);
-      
+
       //left
       wn_l(n,start);
       wn_r(start,n);
@@ -10230,7 +10245,7 @@ unsigned long insert_gap_in_graph_d (unsigned long start)
       if      (!rn_p(start))wn_aa(n,'[');
       else if (!rn_c(start))wn_aa(n,']');
       else wn_aa(n,'-');
-      
+
       pn=n;
       start=rn_c(start);
     }
@@ -10241,25 +10256,25 @@ int insert_msa_in_msa_d (unsigned long s, unsigned long m)
 {
   int n=0;
   unsigned long botM, topM, botS, topS,lastM, firstM, lastS, firstS, is, im, aln;
-  
+
 
   m=n2FirstSeq_d(m);
   s=n2FirstSeq_d(s);
-  
+
   lastM =n2bot_d(m); lastM =rn_p(lastM);
   firstS=n2top_d(s); firstS=rn_c(firstS);
   lastS =n2bot_d(s); lastS =rn_p(lastS);
-  
+
   while (lastM)
     {
       unsigned long bot =rn_c(lastM);
-            
+
       wn_c(lastM,firstS);
       wn_p(firstS,lastM);
-      
+
       wn_c(lastS,bot);
       wn_p(bot,lastS);
-            
+
       lastM =rn_r(lastM);
       firstS=rn_r(firstS);
       lastS =rn_r(lastS);
@@ -10379,20 +10394,20 @@ FILE *disc;
 ALN_node d2m(unsigned long d)
 {
   static ALN_node m=declare_aln_node (1);
- 
+
   if (!disc)disc=tmpfile();
   fseek (disc, sizeof(ALNnode)*(d-1), SEEK_SET);
   fread (m   , sizeof(ALNnode), 1, disc);
-  
+
   return m;
 }
 unsigned long m2d(ALN_node m, unsigned long d)
 {
- 
+
   if (!disc)disc=tmpfile();
   fseek  (disc, sizeof(ALNnode)*(d-1), SEEK_SET);
   fwrite (m   , sizeof(ALNnode), 1, disc);
-  
+
   return d;
 }
 unsigned long declare_aln_node_d_old (int i)
@@ -10411,10 +10426,10 @@ unsigned long declare_aln_node_d (int mode)
   static int available;
   static int tot;
   static unsigned long allocated;
-  
+
   if (!disc)disc=tmpfile();
-  
-  
+
+
   if (!available)
     {
       static ALN_node *buf=(ALN_node*)vcalloc (chunk, sizeof (alnnode));
@@ -10426,21 +10441,21 @@ unsigned long declare_aln_node_d (int mode)
     }
   available--;
   return ++allocated;
-}   
+}
 
 ALN_node* kmsa2graph2 (Sequence *S,KT_node K,Alignment *A0, ALN_node **lu0, ALN_node *list, int *ns, int *done, int max)
 {
   int a,b,c, n;
   Alignment *A1;
-  
+
   if (!A0)
     {
       A0=quick_read_aln (K->msaF);
       lu0=msa2graph (S,A0, NULL);
       for (a=0; a<A0->nseq; a++)list[ns[0]++]=lu0[a][0];
       reset_output_completion ();
-    }  
-  
+    }
+
   for (a=0; a<K->nc; a++)
     {
       ALN_node m, s, t;
@@ -10448,17 +10463,17 @@ ALN_node* kmsa2graph2 (Sequence *S,KT_node K,Alignment *A0, ALN_node **lu0, ALN_
       ALN_node **lu1=msa2graph (S,A1, NULL);
       int i0=name_is_in_list ((K->child[a])->name,A0->name, A0->nseq,MAXNAMES);
       int i1=name_is_in_list ((K->child[a])->name,A1->name, A1->nseq,MAXNAMES);
-      
+
       for (b=0; b<A1->nseq; b++)list[ns[0]++]=lu1[b][0];
-            
+
       n=0;
       while (lu0[i0][n])
 	{
 	  int g;
-	  
+
 	  m=lu0[i0][n];
 	  s=lu1[i1][n];
-	  
+
 	  int lm=node2gap_len (m->r);
 	  int ls=node2gap_len (s->r);
 	  if (lm>0 || ls>0)
@@ -10470,8 +10485,8 @@ ALN_node* kmsa2graph2 (Sequence *S,KT_node K,Alignment *A0, ALN_node **lu0, ALN_
 	      ALN_node ts=n2top(s);
 	      static Alignment *A;
 	      ALN_node buf;
-	      
-	      
+
+
 	      A=align_two_streches4dpa (master, slave, "blosum62mt",-4,-1, "myers_miller_pair_wise", A);
 	      for (c=0; c<A->len_aln; c++)
 		{
@@ -10484,17 +10499,17 @@ ALN_node* kmsa2graph2 (Sequence *S,KT_node K,Alignment *A0, ALN_node **lu0, ALN_
 	    }
 	  n++;
 	}
-      
+
       done[0]+=1;
       //output_completion (stderr,done[0],max, 100, "Incorporating MSAs");
       insert_msa_in_msa (lu1[i1][0],lu0[i0][0]);
       list=kmsa2graph(S,K->child[a], A1, lu1, list, ns, done, max);
-      
+
       for (b=0; b<A1->nseq; b++)vfree(lu1[b]);
       vfree (lu1);
       free_aln (A1);
     }
-  
+
   return list;
 }
 #endif

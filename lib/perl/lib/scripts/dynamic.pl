@@ -35,6 +35,7 @@ my $threadFlag4tc;
 my $threadFlag4famsa;
 my $threadFlag;
 my $tcarg;
+my $level;
 
 my $QUIET_ENV=$ENV{QUIET_ENV};
 
@@ -56,6 +57,7 @@ for ($a=0; $a<=$#ARGV; $a++)
 
     elsif ($ARGV[$a] eq "-thread"){$thread=$ARGV[++$a]}
     elsif ($ARGV[$a] eq "-tcarg") {$tcarg=file2string($ARGV[++$a]);}
+    elsif ($ARGV[$a] eq "-level") {$level=$ARGV[++$a];}
     else
       {
 	add2tcenv($a++,@ARGV);
@@ -110,9 +112,11 @@ if ($method2use eq "list")
     $do_exit=1;
   }
 if ($do_exit){my_exit ($CDIR,$EXIT_SUCCESS);}
-
+my $stri=file2string($infile);
 my $NSEQ=file2nseq($infile);
 
+print("----------------------- $NSEQ --------------------------------------\n");
+print("$stri\n");
 
 if ($NSEQ==0)
   {
@@ -132,33 +136,63 @@ else
     if (-e $dynamic)
       {
        if ($VERBOSE){print "\n![dynamic.pl] --- -dynamic_config FILE: \n";}
+       # Parse dynamic config file
         my @dynamicFile;
-	open (F, $dynamic);
-	while (<F>)
-	  {
-	    my $f=$_;
-	    if ($VERBOSE){print "\n![dynamic.pl] --- FILE content: $f\n";}
-	    ## $f=~/(\W)+ (\d)+/;
-	    @dynamicFile = split ' ', $f;
-	    if ($VERBOSE){print "\n![dynamic.pl] --- -dynamic_config --- $dynamicFile[0] :: $dynamicFile[1]\n";}
-	    $method{$dynamicFile[0]} = $dynamicFile[1];
-	  }
-	close(F);
+        my $index = 0;
+      	open (F, $dynamic);
+      	while (<F>)
+      	  {
+      	    my $f=$_;
+      	    if ($VERBOSE){print "\n![dynamic.pl] --- FILE content: $f\n";}
+      	    ## $f=~/(\W)+ (\d)+/;
+      	    @dynamicFile = split ' ', $f;
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            print "\n![dynamic.pl] --- -dynamic_config --- $dynamicFile[0] :: $dynamicFile[1]\n";
+      	    if ($VERBOSE){print "\n![dynamic.pl] --- -dynamic_config --- $dynamicFile[0] :: $dynamicFile[1]\n";}
+            #Luisa
+      	    #$method{$dynamicFile[0]} = $dynamicFile[1];
+            $method{$index} = $dynamicFile[0];
+            $index = $index +1;
+
+      	  }
+	      close(F);
       }
     else
       {
-	$method{"psicoffee_msa"}=50;
-	$method{"famsa_msa"}=1000000000;
+        	$method{"psicoffee_msa"}=50;
+        	$method{"famsa_msa"}=1000000000;
       }
 
-    foreach my $name (sort { $method{$a} <=> $method{$b} } keys %method)
-      {
-	if ($NSEQ<=$method{$name})
-	  {
-	    $method2use=$name;
-	    last;
-	  }
-      }
+    # LUISA
+    if ($level==0){
+      print("MASTER SEQUENCES\n");
+      $method2use=$method{0};
+    }else{
+      $method2use=$method{1};
+    }
+    print("****************************************************************-----------------------------------LEVEL::: $level \n");
+    print("****************************************************************-----------------------------------METHOD::: $method2use\n");
+
+    # # Here it is actually selecting the method to use
+    # foreach my $name (sort { $method{$a} <=> $method{$b} } keys %method)
+    #   {
+    #       print("$NSEQ");
+    #       print("$name");
+    #       print("$method{$name}");
+    #       print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL\n");
+    #       print("$level\n");
+    #       print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL\n");
+	  #       if ($level==0){
+    #         $method2use=$name;
+    #         last;
+    #       }
+    #     	if ($NSEQ<=$method{$name})
+    #     	  {
+    #     	    $method2use=$name;
+    #           print("****************************************************************-----------------------------------::: $method2use");
+    #     	    last;
+    #     	  }
+    #   }
   }
 
 
@@ -230,6 +264,8 @@ if ($VERBOSE){print "\n![dynamic.pl] --- cmethod == $cmethod\n";}
 
 if ($cmethod eq "tcoffee"|| $cmethod eq "t_coffee" )
   {
+    print("I am running t coffee here");
+    my_system("pwd");
     my_system ("t_coffee -seq $infile -outfile $outfile -output fasta_aln $CL4tc>/dev/null  $QUIET");
   }
 elsif ($cmethod=~/(.*coffee)/ || $cmethod=~/(accurate)/ || $cmethod=~/(expresso)/)

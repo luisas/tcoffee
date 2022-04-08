@@ -21,8 +21,8 @@ typedef struct alnnode
 {
   char aa;
   int seqN;
- 
-  
+
+
   ALN_node p;
   ALN_node r;
   ALN_node l;
@@ -40,8 +40,8 @@ typedef struct ktnode
   char *seqF;//sequence File
   char *msaF;//msa File
   char *treeF;//msa File
-  
-  
+
+
   KT_node parent;
 }KTreenode;
 
@@ -49,11 +49,11 @@ typedef struct treesim{
   float w;
   float uw;
   float d;
-  
+
   float max_w;
   float max_uw;
   float max_d;
-  
+
   int rf;
   int n;//n nodes;
   int nseq;// nseq in the common subset
@@ -82,9 +82,9 @@ typedef struct tnode{
   int seq;
   int maxnseq;
   int nseq;
-  
+
   ///contains a list of the sequences
-  int *lseq; 
+  int *lseq;
   ///contains a coded version of the node: 10010101
   int *lseq2;
   ///contains distances to the root, in nodes
@@ -214,7 +214,7 @@ int seqindex2seqname4tree (NT_node root, Sequence *S);
 
 NT_node  rename_seq_in_tree ( NT_node R, char ***list);
 int decode_seq_in_tree (NT_node R, char **name);
-  
+
 NT_node balance_tree (NT_node);
 int tree2nseq ( NT_node R);
 NT_node tree2deepest_node(NT_node T);
@@ -387,7 +387,7 @@ int ktree2display(KT_node K,char *fname);
 int kseq2kmsa   (NT_node T,KT_node *K, int n, char *method);
 
 char *tree2child_tree(NT_node T,char *seqF,char *treeF);
-char *reg_seq_file2msa_file (char *method,int nseq, char* seqF, char* msaF, char *treeF);
+char *reg_seq_file2msa_file (char *method,int nseq, char* seqF, char* msaF, char *treeF, int level);
 char *kmsa2msa (Sequence *S,KT_node *KL, int n);
 int ktree2klist (KT_node K, KT_node *KL, int *n);
 KT_node tree2ktree (NT_node ROOT,NT_node T,Sequence *S, int N);

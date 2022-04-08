@@ -122,6 +122,7 @@ if ($method2use eq "list")
 if ($do_exit){my_exit ($CDIR,$EXIT_SUCCESS);}
 
 # TOTAL NUMBER OF SEQUENCES IN FASTA
+my $stri=file2abs($infile);
 my $NSEQ=file2nseq($infile);
 
 # If fasta is empty, break
