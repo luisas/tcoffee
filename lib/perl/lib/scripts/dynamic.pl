@@ -264,7 +264,8 @@ if ($VERBOSE){print "\n![dynamic.pl] --- cmethod == $cmethod\n";}
 
 if ($cmethod eq "tcoffee"|| $cmethod eq "t_coffee" )
   {
-    #my_system("cp $CDIR/template_list.txt .");
+    my_system("cp $CDIR/template_list.txt .");
+    my_system("cp $CDIR/*.pdb .");
     my_system ("t_coffee -seq $infile -outfile $outfile -output fasta_aln $CL4tc>/dev/null  $QUIET");
   }
 elsif ($cmethod=~/(.*coffee)/ || $cmethod=~/(accurate)/ || $cmethod=~/(expresso)/)
