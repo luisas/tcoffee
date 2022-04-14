@@ -7,13 +7,13 @@ export VERBOSE_4_DYNAMIC=1
 #export DUMP_SEQ_BUCKETS_ONLY=1
 
 # Only uncomment to recomplile t_coffee
-cd ../t_coffee/
-rm -r ./src
-mkdir src
-cp ./src_safe/makefile ./src/
-cd src
-make t_coffee
-cd ../../dynamic.test
+# cd ../t_coffee/
+# rm -r ./src
+# mkdir src
+# cp ./src_safe/makefile ./src/
+# cd src
+# make t_coffee
+# cd ../../dynamic.test
 
 ../t_coffee/src/t_coffee -reg -reg_method dynamic_msa \
           -seq /home/luisasantus/Desktop/tcoffee/dynamic.test/seqs.fa \
