@@ -6,6 +6,8 @@ use Cwd;
 use File::Path;
 use Sys::Hostname;
 use File::Temp qw/ tempfile tempdir /;
+no warnings;
+
 my $QUIET="2>/dev/null";
 my $VERBOSE=$ENV{VERBOSE_4_DYNAMIC};
 my $LOG=$ENV{LOG_4_DYNAMIC};
@@ -96,6 +98,9 @@ if ($method2use eq "list")
     $ml{clustalo}=1;
     $ml{mafft}=1;
     $ml{famsa}=1;
+    $ml{probcons}=1;
+    $ml{ginsi}=1;
+
     print STDOUT ("**** Supported MSA mode:\n");
     my_system ("t_coffee 2>/dev/null | grep _msa > $listfile");
     open (F, $listfile);
@@ -167,10 +172,12 @@ else
 
             # Here is the MASTER sequences bucket
             if($index == 0 ){
-              $$master_msa = $dynamicFile[0];
+              print("********* master bucket: $dynamicFile[0] \n");
+              $master_msa = $dynamicFile[0];
             }
             # Last case, the one to use for really big buckets
-            elsif($max_nseq == ""){
+            elsif($max_nseq eq ""){
+              print("********* last bucket: $dynamicFile[0] \n");
               $method{$dynamicFile[0]} = "inf";
             }
             # We store the real numbers from the config for the middle cases
@@ -193,7 +200,7 @@ else
     # For the maste seqences we use the first
     # method listed
     if ($level==0){
-      print("MASTER SEQUENCES\n");
+      print("**************************************************************************************************************************************************   MASTER SEQUENCES\n");
       $method2use=$master_msa;
     }else{
       foreach my $name (sort { $method{$a} <=> $method{$b} } keys %method)
@@ -205,7 +212,8 @@ else
               }
         }
     }
-
+    print("LEVEL:$level\n");
+    print("METHOD:$method2use\n");
 
     if($LOG){
       open (F, $logfile);
@@ -304,6 +312,13 @@ elsif ($cmethod eq "clustalo")
   {
     my_system ("clustalo -i $infile $treeFlag -o $outfile  --force $threadFlag $QUIET");
     }
+elsif ($cmethod eq "mafftginsi")
+  {
+        my_system ("t_coffee -other_pg seq_reformat -in $treeFlag -input newick -in2 $infile -input2 fasta_seq -action +newick2mafftnewick >> file.mafftnewick");
+        my_system ("newick2mafft.rb 1.0 file.mafftnewick > file.mafftbinary");
+        my_system ("/mafft/bin/mafft --anysymbol --treein file.mafftbinary $infile  > $outfile");
+
+  }
 elsif ($cmethod =~/sparsecore/)
   {
     my_system ("mafft-sparsecore.rb -i $infile > $outfile $QUIET");
@@ -342,6 +357,7 @@ elsif ($method2use=~/famsaUpgma/)
 
 elsif ($method2use eq "probcons")
     {
+      print "\n![dynamic.pl] --- Command: probcons $infile >  $outfile $QUIET\n";
       my_system ("probcons $infile >  $outfile $QUIET");
     }
 else
