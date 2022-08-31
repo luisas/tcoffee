@@ -8525,6 +8525,11 @@ int ktree2display(KT_node K,char *fname)
     {
       int a;
       fprintf (stderr, "!\t%-10s -- %10d Seq\n", fname, K->nseq);
+      // Luisa provisionary add
+      FILE *fp;
+      fp = fopen("buckets.log", "w");// "w" means that we are going to write on this file
+      fprintf (fp, "!\t%-10s -- %10d Seq\n", fname, K->nseq);
+      fclose(fp); //Don't forget to close the file when finished
 
       for (a=0; a<K->nc; a++)
 	{
