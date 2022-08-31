@@ -8,6 +8,8 @@ use Sys::Hostname;
 use File::Temp qw/ tempfile tempdir /;
 my $QUIET="2>/dev/null";
 my $VERBOSE=$ENV{VERBOSE_4_DYNAMIC};
+my $LOG=$ENV{LOG_4_DYNAMIC};
+my $logfile = file2abs("dynamic.log", "new")
 our $EXIT_FAILURE=1;
 our $EXIT_SUCCESS=0;
 our $LAST_COM="";
@@ -41,6 +43,13 @@ my $QUIET_ENV=$ENV{QUIET_ENV};
 
 if ($QUIET_ENV==1){$QUIET="";}
 
+# -------------------------------------------------------
+#     0.    READ COMMAND LINE PARAMS
+#           and throw correspondin errors if
+#           something is off
+# -------------------------------------------------------
+
+
 for ($a=0; $a<=$#ARGV; $a++)
   {
     if    ($ARGV[$a] eq "-seq"){$infile=file2abs($ARGV[++$a]);}
@@ -48,19 +57,17 @@ for ($a=0; $a<=$#ARGV; $a++)
     elsif ($ARGV[$a] eq "-dynamic_config"){
     	$dynamic=file2abs($ARGV[++$a]);
     	if ($VERBOSE){print "\n![dynamic.pl] --- -dynamic_config flag if/else--- $dynamic\n";}
-	}
-
+	  }
     elsif ($ARGV[$a] eq "-tree") {$tree=$ARGV[++$a];}
     elsif ($ARGV[$a] eq "-method") {$method2use=$ARGV[++$a];}
     elsif ($ARGV[$a] eq "-verbose"){$VERBOSE=1; $QUIET="";}
     elsif ($ARGV[$a] eq "-clean"){$clean=1;}
-
     elsif ($ARGV[$a] eq "-thread"){$thread=$ARGV[++$a]}
     elsif ($ARGV[$a] eq "-tcarg") {$tcarg=file2string($ARGV[++$a]);}
     elsif ($ARGV[$a] eq "-level") {$level=$ARGV[++$a];}
     else
       {
-	add2tcenv($a++,@ARGV);
+	       add2tcenv($a++,@ARGV);
       }
   }
 
@@ -89,25 +96,25 @@ if ($method2use eq "list")
     $ml{clustalo}=1;
     $ml{mafft}=1;
     $ml{famsa}=1;
-      print STDOUT ("**** Supported MSA mode:\n");
+    print STDOUT ("**** Supported MSA mode:\n");
     my_system ("t_coffee 2>/dev/null | grep _msa > $listfile");
     open (F, $listfile);
     while (<F>)
       {
-	my $l=$_;
-	$l=~/(.*_msa)\s+(.*)/;
-	my $m=$1;
-	my $i="$2\n";
-	if ($m=~/mafftsparsescore/)
-	  {
-	   printf STDOUT "%-20s DOES NOT Support [-tree] -- $i", $m;
-	  }
-	elsif ($m=~/tcoffee/){;}
-	elsif ($m=~/mafft/){;}
-	elsif (!$ml{$m})
-	  {
-	    printf STDOUT "%-20s DOES     Support [-tree] -- $i", $m;
-	  }
+      	my $l=$_;
+      	$l=~/(.*_msa)\s+(.*)/;
+      	my $m=$1;
+      	my $i="$2\n";
+      	if ($m=~/mafftsparsescore/)
+    	  {
+    	   printf STDOUT "%-20s DOES NOT Support [-tree] -- $i", $m;
+    	  }
+      	elsif ($m=~/tcoffee/){;}
+      	elsif ($m=~/mafft/){;}
+      	elsif (!$ml{$m})
+    	  {
+    	    printf STDOUT "%-20s DOES     Support [-tree] -- $i", $m;
+    	  }
       }
     $do_exit=1;
   }
@@ -115,8 +122,16 @@ if ($do_exit){my_exit ($CDIR,$EXIT_SUCCESS);}
 my $stri=file2string($infile);
 my $NSEQ=file2nseq($infile);
 
-print("----------------------- $NSEQ --------------------------------------\n");
-print("$stri\n");
+
+if($LOG){
+  open (F, $logfile);
+  while (<F>){
+    print("NSEQ:$NSEQ\n");
+    #print("$stri\n");
+  }
+  close (F);
+}
+
 
 if ($NSEQ==0)
   {
@@ -130,6 +145,8 @@ if (!$outfile)
     $flush=1;
   }
 
+
+my $master_msa;
 if (!($method2use=~/dynamic/)){;}
 else
   {
@@ -144,55 +161,61 @@ else
       	  {
       	    my $f=$_;
       	    if ($VERBOSE){print "\n![dynamic.pl] --- FILE content: $f\n";}
-      	    ## $f=~/(\W)+ (\d)+/;
-      	    @dynamicFile = split ' ', $f;
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            print "\n![dynamic.pl] --- -dynamic_config --- $dynamicFile[0] :: $dynamicFile[1]\n";
-      	    if ($VERBOSE){print "\n![dynamic.pl] --- -dynamic_config --- $dynamicFile[0] :: $dynamicFile[1]\n";}
-            #Luisa
-      	    #$method{$dynamicFile[0]} = $dynamicFile[1];
-            $method{$index} = $dynamicFile[0];
-            $index = $index +1;
+            @dynamicFile = split ' ', $f;
+            (my $max_nseq = $dynamicFile[1]) =~ s/\s//g;
+            if ($VERBOSE){print "\n![dynamic.pl] --- -dynamic_config --- $dynamicFile[0] :: $dynamicFile[1]\n";}
 
+            # Here is the MASTER sequences bucket
+            if($index == 0 ){
+              $$master_msa = $dynamicFile[0]};
+            }
+            # Last case, the one to use for really big buckets
+            else if($max_nseq == ""){
+              $method{$dynamicFile[0]} = "inf";
+            }
+            # We store the real numbers from the config for the middle cases
+            else{
+              $method{$dynamicFile[0]} = $dynamicFile[1];
+            }
+            $index = $index +1;
       	  }
 	      close(F);
       }
     else
-      {
-        	$method{"psicoffee_msa"}=50;
+      {   # default
+        	$method{"psicoffee_msa"}=-1;
         	$method{"famsa_msa"}=1000000000;
       }
+    # ---------------------------
+    #    Select the MSA to use
+    # ---------------------------
 
-    # LUISA
+    # For the maste seqences we use the first
+    # method listed
     if ($level==0){
       print("MASTER SEQUENCES\n");
-      $method2use=$method{0};
+      $method2use=$master_msa;
     }else{
-      $method2use=$method{1};
+      foreach my $name (sort { $method{$a} <=> $method{$b} } keys %method)
+        {
+            if ($NSEQ<=$method{$name})
+              {
+                $method2use=$name;
+                last;
+              }
+        }
     }
-    print("****************************************************************-----------------------------------LEVEL::: $level \n");
-    print("****************************************************************-----------------------------------METHOD::: $method2use\n");
 
-    # # Here it is actually selecting the method to use
-    # foreach my $name (sort { $method{$a} <=> $method{$b} } keys %method)
-    #   {
-    #       print("$NSEQ");
-    #       print("$name");
-    #       print("$method{$name}");
-    #       print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL\n");
-    #       print("$level\n");
-    #       print("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL\n");
-	  #       if ($level==0){
-    #         $method2use=$name;
-    #         last;
-    #       }
-    #     	if ($NSEQ<=$method{$name})
-    #     	  {
-    #     	    $method2use=$name;
-    #           print("****************************************************************-----------------------------------::: $method2use");
-    #     	    last;
-    #     	  }
-    #   }
+
+    if($LOG){
+      open (F, $logfile);
+      while (<F>){
+        print("LEVEL:$level\n");
+        print("METHOD:$method2use\n");
+      }
+      close (F);
+    }
+
   }
 
 
@@ -204,36 +227,35 @@ if ($tree)
     if ( $tree eq "default"){$treeF=0;}
     elsif ( -e $tree)
       {
-	my_system ("cp $tree $tmptree");
+	       my_system ("cp $tree $tmptree");
       }
     elsif ($tree eq "master" || $tree eq "main" || $tree eq "parent")
       {
-	if ($ENV{CHILD_TREEF_4_TCOFFEE} && -e $ENV{CHILD_TREEF_4_TCOFFEE})
-	  {
-	    my $ctree=$ENV{CHILD_TREEF_4_TCOFFEE};
-	    my_system ("mv $ctree $tmptree");
-	  }
-	else
-	  {
-	    my $master_tree=$ENV{CHILD_TREE_4_TCOFFEE};
-	    my_system ("t_coffee -other_pg seq_reformat -in $master_tree -in2 $infile -action +prune_tree -output newick > $tmptree");
-	  }
+	       if ($ENV{CHILD_TREEF_4_TCOFFEE} && -e $ENV{CHILD_TREEF_4_TCOFFEE})
+	        {
+      	    my $ctree=$ENV{CHILD_TREEF_4_TCOFFEE};
+      	    my_system ("mv $ctree $tmptree");
+      	  }
+      	else
+      	  {
+      	    my $master_tree=$ENV{CHILD_TREE_4_TCOFFEE};
+      	    my_system ("t_coffee -other_pg seq_reformat -in $master_tree -in2 $infile -action +prune_tree -output newick > $tmptree");
+      	  }
       }
     else
       {
-	my_system ("t_coffee -other_pg seq_reformat -in $infile -action +seq2dnd $tree -output newick> $tmptree");
+	       my_system ("t_coffee -other_pg seq_reformat -in $infile -action +seq2dnd $tree -output newick> $tmptree");
       }
 
     if ($method2use=~/mafft/)
       {
-	#print "cp $tmptree /Users/cnotredame/.Trash/$$.tmptree\n";
-	#system ("cp $tmptree /Users/cnotredame/.Trash/$$.tmptree");
-
-	my_system ("t_coffee -other_pg seq_reformat -in $tmptree -output mafftdndmatrix> $treeF");
+      	#print "cp $tmptree /Users/cnotredame/.Trash/$$.tmptree\n";
+      	#system ("cp $tmptree /Users/cnotredame/.Trash/$$.tmptree");
+	      my_system ("t_coffee -other_pg seq_reformat -in $tmptree -output mafftdndmatrix> $treeF");
       }
     else
       {
-	my_system ("mv $tmptree $treeF");
+	      my_system ("mv $tmptree $treeF");
       }
   }
 chdir ($tmpdir);
@@ -241,6 +263,7 @@ chdir ($tmpdir);
 #Collect T-Coffee Command Line
 my $CL4tc=get_cl4tc();#will collect from env every CLTCOFEE env variable
 
+# Prepare different tree flag for the different methods
 if (!$treeF || $NSEQ<=2){$treeFlag="";}
 elsif ( $method2use=~/coffee/ || $method2use=~/accurate/){$treeFlag="-usetree $treeF ";}
 elsif ( $method2use=~/clustalo/){$treeFlag="--guidetree-in=$treeF ";}
@@ -249,13 +272,17 @@ elsif ( $method2use=~/mafft/){$treeFlag="--treein $treeF ";}
 elsif ( $method2use=~/famsa/){$treeFlag="-gt import $treeF ";}
 $CL4tc.=" $treeFlag ";
 
+# Prepare different thread flag for different methods
 $threadFlag=($thread)?"--thread $thread ":"--thread 1 ";
 $threadFlag4tc=($thread)?"-thread $thread ":"-thread 1 ";
 $threadFlag4famsa=($thread)?"-t $thread ":"-t 1 ";
 $CL4tc.=" $threadFlag4tc ";
 
+# Print Tcoffee ENV
 if ($VERBOSE){print "\n![dynamic.pl] --- CL4tc == $CL4tc\n";}
 
+
+# Launch the command using the prepared flags
 my $cmethod=$method2use;
 $cmethod=~s/_pair/_msa/;
 $cmethod=~s/_msa//;
@@ -288,22 +315,19 @@ elsif (($cmethod =~/mafft/))
 
     if ( $cmethod eq "mafft" || $cmethod=~/\-/ )
       {
-	$mm=$cmethod;
+	       $mm=$cmethod;
       }
     elsif (($cmethod=~/mafft(.*)/))
       {
-	$mm="mafft-".$1;
+	       $mm="mafft-".$1;
       }
-
     if ($mm =~/1/)
       {
-	$mm=~s/1/i/;
-	$retree="--retree 1 "
+	       $mm=~s/1/i/;
+	       $retree="--retree 1 "
       };
-
     my_system ("$mm --anysymbol $threadFlag $treeFlag $retree $infile > $outfile $QUIET");
   }
-
 elsif ($method2use=~/famsa/)
   {
     print "\n![dynamic.pl] --- FAMSA DEFAULT\n";
@@ -315,16 +339,21 @@ elsif ($method2use=~/famsaUpgma/)
     print "\n![dynamic.pl] --- Command: famsa -gt upgma $treeFlag $threadFlag4famsa $infile $outfile >/dev/null $QUIET\n";
     my_system ("famsa -gt upgma $treeFlag $threadFlag4famsa $infile $outfile >/dev/null $QUIET");
   }
+
+elsif ($method2use eq "probcons")
+    {
+      my_system ("probcons $infile >  $outfile $QUIET");
+    }
 else
   {
     if ($treeF)
       {
-	printf (STDERR "WARNING: Method $method2use CANNOT use pre-sepecified guide tree [dynamic.pl]\n");
+	       printf (STDERR "WARNING: Method $method2use CANNOT use pre-sepecified guide tree [dynamic.pl]\n");
       }
     my_system ("t_coffee -in $infile -method $method2use -outfile $outfile -output fasta_aln $tcarg -quiet $QUIET");
   }
 
-#Flush output if none provided
+# Flush output if none provided
 if ( ! -e $outfile)
   {
     print "ERROR - No MSA computed - $LAST_COM -- [FATAL:dynamic.pl]\n";
@@ -336,23 +365,29 @@ elsif ( $flush)
    while (<F>){print $_;}
    close (F);
  }
-#Clean empty files
+
+# Clean empty files
 foreach my $f (@tmpL){unlink($f);}
 
-
+# Log printing
 if ($VERBOSE!=-1)
   {
     open (F, "$stderrF");
     while (<F>)
       {
-	my $l=$_;
-	if ( $VERBOSE || $l=~/WARNING/ || $l=~/ERROR/ || $l=~/INFORNATION/){print stderr "$l";}
+	      my $l=$_;
+	      if ( $VERBOSE || $l=~/WARNING/ || $l=~/ERROR/ || $l=~/INFORMATION/){print stderr "$l";}
       }
     close (F);
   }
 
 my_exit ($CDIR,$EXIT_SUCCESS);
 
+
+
+# -------------------------------------------------------
+#           HELPER FUNCTIONS
+# -------------------------------------------------------
 
 sub file2nseq
   {
