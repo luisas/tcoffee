@@ -205,9 +205,13 @@ else
     }else{
       foreach my $name (sort { $method{$a} <=> $method{$b} } keys %method)
         {
+
+
             if ($NSEQ<=$method{$name})
               {
+                print("NAME: $name"); 
                 $method2use=$name;
+                print("NAME: $method2use");
                 last;
               }
         }
