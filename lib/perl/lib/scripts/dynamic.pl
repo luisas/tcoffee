@@ -167,7 +167,7 @@ else
 
             # Here is the MASTER sequences bucket
             if($index == 0 ){
-              $$master_msa = $dynamicFile[0]};
+              $$master_msa = $dynamicFile[0];
             }
             # Last case, the one to use for really big buckets
             elsif($max_nseq == ""){
