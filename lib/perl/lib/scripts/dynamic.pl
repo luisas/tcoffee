@@ -9,7 +9,7 @@ use File::Temp qw/ tempfile tempdir /;
 my $QUIET="2>/dev/null";
 my $VERBOSE=$ENV{VERBOSE_4_DYNAMIC};
 my $LOG=$ENV{LOG_4_DYNAMIC};
-my $logfile = file2abs("dynamic.log", "new")
+my $logfile = file2abs("dynamic.log", "new"); 
 our $EXIT_FAILURE=1;
 our $EXIT_SUCCESS=0;
 our $LAST_COM="";
