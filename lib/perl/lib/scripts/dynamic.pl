@@ -209,9 +209,7 @@ else
 
             if ($NSEQ<=$method{$name})
               {
-                print("NAME: $name"); 
                 $method2use=$name;
-                print("NAME: $method2use");
                 last;
               }
         }
@@ -281,6 +279,7 @@ elsif ( $method2use=~/coffee/ || $method2use=~/accurate/){$treeFlag="-usetree $t
 elsif ( $method2use=~/clustalo/){$treeFlag="--guidetree-in=$treeF ";}
 elsif ( $method2use=~/mafftsparsecore/){;}
 elsif ( $method2use=~/mafft/){$treeFlag="--treein $treeF ";}
+elsif ( $method2use=~/mafftginsi/){$treeFlag="--treein $treeF ";}
 elsif ( $method2use=~/famsa/){$treeFlag="-gt import $treeF ";}
 $CL4tc.=" $treeFlag ";
 
@@ -319,8 +318,14 @@ elsif ($cmethod eq "clustalo")
 elsif ($cmethod eq "mafftginsi")
   {
         my_system ("t_coffee -other_pg seq_reformat -in $treeFlag -input newick -in2 $infile -input2 fasta_seq -action +newick2mafftnewick >> file.mafftnewick");
+        print "\n![dynamic.pl][--------------MAFFTGINSI TESTING -------] t_coffee -other_pg seq_reformat -in $treeFlag -input newick -in2 $infile -input2 fasta_seq -action +newick2mafftnewick >> file.mafftnewick \n";
+
         my_system ("newick2mafft.rb 1.0 file.mafftnewick > file.mafftbinary");
-        my_system ("/mafft/bin/mafft --anysymbol --treein file.mafftbinary $infile  > $outfile");
+        print "\n \n![dynamic.pl][--------------MAFFTGINSI TESTING -------]newick2mafft.rb 1.0 file.mafftnewick > file.mafftbinary \n";
+
+        my_system ("ginsi --treein file.mafftbinary ${seqs} > ${id}.prog.${align_method}.with.${tree_method}.tree.aln");
+        print "\n\n![dynamic.pl][--------------MAFFTGINSI TESTING -------]ginsi --treein file.mafftbinary ${seqs} > ${id}.prog.${align_method}.with.${tree_method}.tree.aln
+";
 
   }
 elsif ($cmethod =~/sparsecore/)
