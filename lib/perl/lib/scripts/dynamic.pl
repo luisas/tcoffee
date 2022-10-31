@@ -324,8 +324,6 @@ elsif ($cmethod eq "mafftginsi")
         print "\n \n![dynamic.pl][--------------MAFFTGINSI TESTING -------]newick2mafft.rb 1.0 file.mafftnewick > file.mafftbinary \n";
 
         my_system ("ginsi --treein file.mafftbinary $infile > $outfile");
-        print "\n\n![dynamic.pl][--------------MAFFTGINSI TESTING -------]ginsi --treein file.mafftbinary ${seqs} > ${id}.prog.${align_method}.with.${tree_method}.tree.aln
-";
 
   }
 elsif ($cmethod =~/sparsecore/)
