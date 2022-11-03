@@ -128,12 +128,12 @@ my $stri=file2string($infile);
 my $NSEQ=file2nseq($infile);
 
 
+# Print log file for dynamic
 if($LOG){
   open (F, $logfile);
   while (<F>){
     print("NSEQ:$NSEQ\n");
-    #print("$stri\n");
-  }
+    }
   close (F);
 }
 
@@ -149,6 +149,13 @@ if (!$outfile)
     push (@tmpL,$outfile);
     $flush=1;
   }
+
+
+# -------------------------------------------------------
+#     1.    PARSE CONFIGURATION FILE
+#           Based on the configuratio file instruction
+#           each bucket gets assigned an MSA method
+# -------------------------------------------------------
 
 
 my $master_msa;
@@ -229,6 +236,10 @@ else
   }
 
 
+# -------------------------------------------------------
+#     2.  PREP TREE
+# -------------------------------------------------------
+
 if ($tree)
   {
     ($h2,$treeF)=tempfile();
@@ -257,7 +268,11 @@ if ($tree)
 	       my_system ("t_coffee -other_pg seq_reformat -in $infile -action +seq2dnd $tree -output newick> $tmptree");
       }
 
-    if ($method2use=~/mafft/)
+    if ($method2use=~/mafftginsi/){
+        my_system ("t_coffee -other_pg seq_reformat -in $tmptree -input newick -in2 $infile -input2 fasta_seq -action +newick2mafftnewick >> file.mafftnewick");
+        my_system ("newick2mafft.rb 1.0 file.mafftnewick > $treeF");
+    }
+    elsif ($method2use=~/mafft/)
       {
       	#print "cp $tmptree /Users/cnotredame/.Trash/$$.tmptree\n";
       	#system ("cp $tmptree /Users/cnotredame/.Trash/$$.tmptree");
@@ -278,8 +293,8 @@ if (!$treeF || $NSEQ<=2){$treeFlag="";}
 elsif ( $method2use=~/coffee/ || $method2use=~/accurate/){$treeFlag="-usetree $treeF ";}
 elsif ( $method2use=~/clustalo/){$treeFlag="--guidetree-in=$treeF ";}
 elsif ( $method2use=~/mafftsparsecore/){;}
-elsif ( $method2use=~/mafft/){$treeFlag="--treein $treeF ";}
 elsif ( $method2use=~/mafftginsi/){$treeFlag="--treein $treeF ";}
+elsif ( $method2use=~/mafft/){$treeFlag="--treein $treeF ";}
 elsif ( $method2use=~/famsa/){$treeFlag="-gt import $treeF ";}
 $CL4tc.=" $treeFlag ";
 
@@ -317,14 +332,7 @@ elsif ($cmethod eq "clustalo")
     }
 elsif ($cmethod eq "mafftginsi")
   {
-        my_system ("t_coffee -other_pg seq_reformat -in $treeFlag -input newick -in2 $infile -input2 fasta_seq -action +newick2mafftnewick >> file.mafftnewick");
-        print "\n![dynamic.pl][--------------MAFFTGINSI TESTING -------] t_coffee -other_pg seq_reformat -in $treeFlag -input newick -in2 $infile -input2 fasta_seq -action +newick2mafftnewick >> file.mafftnewick \n";
-
-        my_system ("newick2mafft.rb 1.0 file.mafftnewick > file.mafftbinary");
-        print "\n \n![dynamic.pl][--------------MAFFTGINSI TESTING -------]newick2mafft.rb 1.0 file.mafftnewick > file.mafftbinary \n";
-
-        my_system ("ginsi --treein file.mafftbinary $infile > $outfile");
-
+    my_system ("ginsi $treeFlag $infile > $outfile");
   }
 elsif ($cmethod =~/sparsecore/)
   {
