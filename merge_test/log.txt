@@ -1,0 +1,32 @@
+!Maximum N Threads --- 1
+!Compute Guide Tree ---  reg_tree codnd
+!Compute Guide Tree ---  done
+!Compute Weights --- default longuest
+!Compute Weights --- done
+!Compute MSA --- reg_method clustalo_msa -- reg_nseq 2 -- start
+!	1          --          2 Seq
+!	1.1        --          2 Seq
+mv: failed to preserve ownership for '0': Permission denied
+
+!		[clustalo_msa][TOT=    2][  0 %]mv: failed to preserve ownership for '0': Permission denied
+!		[clustalo_msa][TOT=    2][100 %]
+
+!All Jobs collected
+
+!		[Final MSA][TOT=    3][  0 %]!		[Final MSA][TOT=    3][ 66 %]!		[Final MSA][TOT=    3][100 %]
+!Compute MSA --- done
+mv: failed to preserve ownership for '/home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data_new_merge/tiny_test.aln': Permission denied
+mv: failed to preserve ownership for '/home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data_new_merge/tiny_test.aln': Permission denied
+
+	#### File Type= MSA             Format= fasta_aln       Name= /home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data_new_merge/tiny_test.alnmv: failed to preserve ownership for '/home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data_new_merge/tiny_test.aln': Permission denied
+mv: failed to preserve ownership for '/home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data_new_merge/tiny_test.mbed': Permission denied
+
+	#### File Type= TREE            Format= newick          Name= /home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data_new_merge/tiny_test.mbedmv: failed to preserve ownership for '/home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data_new_merge/tiny_test.mbed': Permission denied
+
+
+# Command Line: /home/luisasantus/Desktop/crg_cluster/projects/tcoffee/t_coffee/src/t_coffee -reg -seq /home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data/tiny.fa -reg_nseq 2 -outfile /home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data_new_merge/tiny_test.aln -outtree /home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data_new_merge/tiny_test.mbed  [PROGRAM:T-COFFEE]
+# REG memory Usage Memory Usage: Current= 28.769 Mb, Max= 28.867 Mb
+# Results Produced with T-COFFEE Version_13.45.61.3c310a9 (Version_13.45.61.3c310a9)
+# T-COFFEE is available from http://www.tcoffee.org
+# Register on: https://groups.google.com/group/tcoffee/
+
