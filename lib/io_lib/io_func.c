@@ -361,6 +361,8 @@ int ** read_matrice (char *mat_name_in)
 	
 	else if (strm (mat_name, "promoter_tf1"))vector=promoter_tf1;
 	else if (strm (mat_name, "blosumR"))vector=blosumR;
+	else if (strm (mat_name, "custom"))vector=custom;
+
 
 	/*Header Matrices*/
 	if(vector)

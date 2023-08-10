@@ -25,7 +25,7 @@ mv: failed to preserve ownership for '/home/luisasantus/Desktop/crg_cluster/proj
 
 
 # Command Line: /home/luisasantus/Desktop/crg_cluster/projects/tcoffee/t_coffee/src/t_coffee -reg -seq /home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data/tiny.fa -reg_nseq 2 -outfile /home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data_new_merge/tiny_test.aln -outtree /home/luisasantus/Desktop/crg_cluster/projects/tcoffee/merge_test/data_new_merge/tiny_test.mbed  [PROGRAM:T-COFFEE]
-# REG memory Usage Memory Usage: Current= 28.769 Mb, Max= 28.867 Mb
+# REG memory Usage Memory Usage: Current= 28.766 Mb, Max= 28.865 Mb
 # Results Produced with T-COFFEE Version_13.45.61.3c310a9 (Version_13.45.61.3c310a9)
 # T-COFFEE is available from http://www.tcoffee.org
 # Register on: https://groups.google.com/group/tcoffee/
